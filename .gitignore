@@ -1,5 +1,6 @@
 # Build artifacts
 build/
+build-analysis/
 cmake-build-*/
 dist/
 *.o
