@@ -19,7 +19,7 @@ on:
 
 env:
   REGISTRY: registry-1.docker.io
-  IMAGE_NAME: bansikah/sysguardd-helm
+  OCI_NAMESPACE: bansikah
 
 jobs:
   push-helm-chart:
@@ -53,6 +53,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Log in to OCI registry for Helm
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} \
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin
+
       - name: Package Helm chart
         run: |
           helm package helm/ --version ${{ steps.chart_version.outputs.version }}
@@ -63,16 +69,16 @@ jobs:
           CHART_FILE=$(ls sysguardd-*.tgz | head -1)
           echo "Pushing ${CHART_FILE} to OCI registry..."
           
-          helm push "${CHART_FILE}" oci://${REGISTRY}/bansikah
+          helm push "${CHART_FILE}" oci://${REGISTRY}/${OCI_NAMESPACE}
           
           echo "Chart pushed successfully"
           echo "Install with:"
-          echo "  helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm --version ${{ steps.chart_version.outputs.version }}"
+          echo "  helm install sysguardd oci://${REGISTRY}/${OCI_NAMESPACE}/sysguardd --version ${{ steps.chart_version.outputs.version }}"
 
       - name: Verify chart in registry
         run: |
           echo "Verifying chart in registry..."
-          helm pull oci://${REGISTRY}/bansikah/sysguardd-helm --version ${{ steps.chart_version.outputs.version }} --untar
+          helm pull oci://${REGISTRY}/${OCI_NAMESPACE}/sysguardd --version ${{ steps.chart_version.outputs.version }} --untar
           ls -la sysguardd/
           echo "Chart verified in registry"
 
@@ -82,4 +88,4 @@ jobs:
           echo "Helm chart published to OCI registry"
           echo "Chart Version: ${{ steps.chart_version.outputs.version }}"
           echo "Install with:"
-          echo "helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm --version ${{ steps.chart_version.outputs.version }}"
+          echo "helm install sysguardd oci://${REGISTRY}/${OCI_NAMESPACE}/sysguardd --version ${{ steps.chart_version.outputs.version }}"
