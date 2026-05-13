@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and Test (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc-debug-sanitized
+            cc: gcc
+            cxx: g++
+            build_type: Debug
+            sanitizers: ON
+          - name: gcc-release
+            cc: gcc
+            cxx: g++
+            build_type: Release
+            sanitizers: OFF
+          - name: clang-release
+            cc: clang
+            cxx: clang++
+            build_type: Release
+            sanitizers: OFF
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential clang
+
+      - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DSYSGUARDD_ENABLE_SANITIZERS=${{ matrix.sanitizers }}
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Analysis Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang-tidy cppcheck build-essential
+
+      - name: Configure for Analysis
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DSYSGUARDD_ENABLE_SANITIZERS=OFF
+
+      - name: Build Analysis Targets
+        run: cmake --build build --parallel
+
+      - name: Run cppcheck
+        run: |
+          cppcheck \
+            --enable=warning,performance,portability \
+            --std=c++20 \
+            --error-exitcode=1 \
+            --inline-suppr \
+            --quiet \
+            -I include \
+            src tests
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy \
+            src/*.cpp tests/*.cpp \
+            -p build \
+            -checks=-*,clang-analyzer-*,bugprone-* \
+            --warnings-as-errors=clang-analyzer-*,bugprone-*
