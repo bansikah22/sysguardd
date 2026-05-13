@@ -76,6 +76,18 @@ Linux service install via systemd:
 ./scripts/install.sh --systemd
 ```
 
+Remote installation (clone and install in one command):
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/main/scripts/install.sh) --systemd
+```
+
+Or using a specific version/branch:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/main/scripts/install.sh) --repo-url https://github.com/bansikah22/sysguardd.git --ref main --systemd
+```
+
 Non-developer one-command setup:
 
 ```bash
