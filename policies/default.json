@@ -1,0 +1,11 @@
+{
+  "deny_executables": [
+    "/usr/bin/nc",
+    "/usr/bin/ncat",
+    "/usr/bin/socat"
+  ],
+  "deny_prefixes": [
+    "/tmp/",
+    "/dev/shm/"
+  ]
+}

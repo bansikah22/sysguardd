@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sysguardd
+  namespace: kube-system
+  labels:
+    app: sysguardd
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sysguardd
+  labels:
+    app: sysguardd
+rules:
+# Read pod and node metadata for context (audit logging)
+- apiGroups: [""]
+  resources:
+  - pods
+  - nodes
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+
+# Read current user context
+- apiGroups: [""]
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+
+# Report metrics and events (future)
+- apiGroups: [""]
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sysguardd
+  labels:
+    app: sysguardd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sysguardd
+subjects:
+- kind: ServiceAccount
+  name: sysguardd
+  namespace: kube-system

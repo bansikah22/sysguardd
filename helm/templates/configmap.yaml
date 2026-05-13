@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sysguardd.fullname" . }}-policy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+data:
+  default.policy: |
+{{ .Values.policy.data | indent 4 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sysguardd.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if eq .Values.service.type "ClusterIP" }}
+  clusterIP: None
+  {{- end }}
+  selector:
+    {{- include "sysguardd.selectorLabels" . | nindent 4 }}
+  ports:
+  - name: {{ .Values.service.name }}
+    port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}
+    protocol: TCP

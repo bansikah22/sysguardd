@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sysguardd-policy
+  namespace: kube-system
+  labels:
+    app: sysguardd
+data:
+  default.policy: |
+    # SysGuardd Default Policy for Kubernetes Nodes
+    # Deny-list based enforcement model
+    #
+    # This policy blocks suspicious execution patterns in container runtime.
+    # Start in monitor mode to observe violations, then switch to enforce after validation.
+    
+    deny_executable=/bin/bash
+    deny_executable=/bin/sh
+    deny_prefix=/tmp/
+    deny_prefix=/dev/shm/
+    
+    # Example: Allow-list by adding specific paths to /etc/sysguardd/allow.policy
+    # (Phase 2 feature)
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sysguardd-config
+  namespace: kube-system
+  labels:
+    app: sysguardd
+data:
+  sysguardd.conf: |
+    # SysGuardd Configuration for Kubernetes
+    
+    # Log level: debug, info, warn, error
+    log_level=info
+    
+    # Policy file location
+    policy_file=/etc/sysguardd/default.policy
+    
+    # Enforcement mode: monitor or enforce
+    # Start with monitor, switch after validation
+    enforcement_mode=monitor
+    
+    # Audit log destination: stdout, file, or remote
+    audit_destination=stdout
+    
+    # Metrics port for Prometheus scraping (future)
+    metrics_port=9100

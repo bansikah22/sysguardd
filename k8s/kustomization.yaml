@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+# Base namespace and labels
+commonLabels:
+  app.kubernetes.io/name: sysguardd
+  app.kubernetes.io/version: v1
+  app.kubernetes.io/managed-by: kustomize
+
+commonAnnotations:
+  description: "Runtime process enforcement daemon for Kubernetes"
+
+# Manifests to include
+resources:
+- rbac.yaml
+- configmap.yaml
+- daemonset.yaml
+
+# Image configuration
+images:
+- name: sysguardd
+  newName: sysguardd
+  newTag: latest
+
+# Patches for environment-specific customization
+# Examples:
+# - op: replace
+#   path: /spec/template/spec/containers/0/args/2
+#   value: enforce  # Switch to enforce mode after validation

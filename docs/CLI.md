@@ -423,11 +423,11 @@ kubectl logs -f <pod>
 ## Phase Timeline
 
 ### Phase 1 (Current)
-- ✅ Docker-like CLI interface
-- ✅ Status/config inspection with JSON output
-- ✅ Policy validation
-- ⏳ Policy hot-reload (in progress)
-- ⏳ Log archival and streaming (in progress)
+- DONE: Docker-like CLI interface
+- DONE: Status/config inspection with JSON output
+- DONE: Policy validation
+- IN PROGRESS: Policy hot-reload
+- IN PROGRESS: Log archival and streaming
 
 ### Phase 1B
 - Log streaming to stdout/journal

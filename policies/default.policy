@@ -2,8 +2,7 @@
 # deny_executable=/absolute/path/to/bin
 # deny_prefix=/absolute/path/prefix/
 
-deny_executable=/usr/bin/nc
-deny_executable=/usr/bin/ncat
-deny_executable=/usr/bin/socat
+deny_executable=/bin/bash
+deny_executable=/bin/sh
 deny_prefix=/tmp/
 deny_prefix=/dev/shm/

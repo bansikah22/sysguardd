@@ -1,5 +1,9 @@
 # SysGuardd
 
+<div align="center">
+  <img src="docs/images/sysguardd.png" alt="SysGuardd Logo" width="200" />
+</div>
+
 SysGuardd is a runtime process enforcement daemon focused on stopping unauthorized execution on Linux hosts and Kubernetes nodes.
 
 It combines kernel-level visibility (via eBPF), deterministic policy evaluation, and fast active mitigation to reduce time-to-detect and time-to-block.
@@ -76,6 +80,18 @@ Linux service install via systemd:
 ./scripts/install.sh --systemd
 ```
 
+Remote installation (clone and install in one command):
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/main/scripts/install.sh) --systemd
+```
+
+Or using a specific version/branch:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/main/scripts/install.sh) --repo-url https://github.com/bansikah22/sysguardd.git --ref main --systemd
+```
+
 Non-developer one-command setup:
 
 ```bash
@@ -95,6 +111,38 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+## Kubernetes Deployment (Helm)
+
+Deploy to Kubernetes using Helm. The chart is published as an OCI artifact to Docker Hub:
+
+```bash
+# Install from OCI registry
+helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm --version 1.0.0
+
+# Or install from local chart
+helm install sysguardd ./helm
+
+# Verify deployment
+kubectl get daemonset -n kube-system sysguardd
+kubectl get pods -n kube-system -l app=sysguardd
+```
+
+For detailed Kubernetes setup, policy configuration, and operations, see [docs/KUBERNETES.md](docs/KUBERNETES.md).
+
+**Event Injection Testing:**
+
+Validate monitor and enforce modes with synthetic process events:
+
+```bash
+# Test monitor mode (events logged, no enforcement)
+./scripts/test-event-injection.sh
+
+# Test enforce mode (enforcement actions logged)
+./scripts/test-enforce-mode.sh
+```
+
+See [docs/EVENT_INJECTION_TESTING.md](docs/EVENT_INJECTION_TESTING.md) for detailed test results.
 
 ## Command-Line Interface
 
