@@ -13,24 +13,10 @@ data:
     # This policy blocks suspicious execution patterns in container runtime.
     # Start in monitor mode to observe violations, then switch to enforce after validation.
     
-    # Block common reverse shell tactics
     deny_executable=/bin/bash
     deny_executable=/bin/sh
-    deny_executable=/usr/bin/nc
-    deny_executable=/usr/bin/ncat
-    deny_executable=/bin/netcat
-    
-    # Block container escape attempts
-    deny_prefix=/proc/sys/kernel
-    deny_prefix=/sys/kernel/config
-    deny_prefix=/sys/kernel/security
-    
-    # Block host filesystem access from containers
-    deny_prefix=/host/
-    
-    # Block privilege escalation binaries
-    deny_executable=/usr/bin/sudo
-    deny_executable=/usr/bin/su
+    deny_prefix=/tmp/
+    deny_prefix=/dev/shm/
     
     # Example: Allow-list by adding specific paths to /etc/sysguardd/allow.policy
     # (Phase 2 feature)

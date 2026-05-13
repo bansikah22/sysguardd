@@ -23,6 +23,9 @@ Config parse_config(int argc, char** argv) {
 
   for (int i = 1; i < argc; ++i) {
     std::string arg{argv[i]};
+    if (arg == "daemon") {
+      continue;
+    }
     if (arg == "--mode") {
       if (i + 1 >= argc) {
         throw std::invalid_argument("--mode requires a value");

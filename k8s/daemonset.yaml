@@ -52,8 +52,9 @@ spec:
       
       containers:
       - name: sysguardd
-        image: sysguardd:latest
+        image: bansikah/sysguardd:v0.1.0
         imagePullPolicy: IfNotPresent
+        stdin: true
         
         # Run in monitor mode by default; switch to enforce after validation
         args:
@@ -67,7 +68,7 @@ spec:
         securityContext:
           privileged: false
           readOnlyRootFilesystem: true
-          runAsNonRoot: true
+          runAsNonRoot: false
           runAsUser: 0  # TODO: Eventually drop CAP_KILL and run as unprivileged user
           capabilities:
             add:

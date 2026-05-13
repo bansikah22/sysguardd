@@ -6,8 +6,27 @@ This guide shows how to deploy and test SysGuardd on Kubernetes clusters using d
 
 - Kubernetes cluster (1.20+)
 - `kubectl` configured to access your cluster
-- One of: Helm 3+, Kustomize, or raw kubectl
-- Docker image built and available (see [docs/INSTALL-TEST.md](INSTALL-TEST.md))
+- Helm 3.8+ (for OCI registry support)
+- Docker image available (local or public registry)
+
+## Quick Start
+
+### Install from Published Helm Chart (OCI Registry)
+
+The easiest way for end-users to install SysGuardd:
+
+```bash
+# Install latest version from Docker Hub OCI registry
+helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm \
+  --namespace kube-system \
+  --create-namespace
+
+# Verify deployment
+kubectl get daemonset -n kube-system sysguardd
+kubectl get pods -n kube-system -l app=sysguardd
+```
+
+For details on using the published chart, see [docs/HELM_DISTRIBUTION.md](HELM_DISTRIBUTION.md).
 
 ## Deployment Methods
 
@@ -15,9 +34,9 @@ This guide shows how to deploy and test SysGuardd on Kubernetes clusters using d
 
 Helm provides the most flexible and production-ready deployment model.
 
-#### Install via Helm
+#### Install via Helm - Local Chart
 
-**From local chart:**
+**From local chart (for development):**
 ```bash
 helm install sysguardd ./helm \
   --namespace kube-system \
@@ -42,8 +61,8 @@ helm upgrade sysguardd ./helm \
 
 | Value | Default | Description |
 |-------|---------|-------------|
-| `image.repository` | `sysguardd` | Container image name |
-| `image.tag` | `latest` | Image tag |
+| `image.repository` | `bansikah/sysguardd` | Container image name |
+| `image.tag` | `v0.1.0` | Image tag |
 | `sysguardd.mode` | `monitor` | Enforcement mode: `monitor` or `enforce` |
 | `sysguardd.logLevel` | `info` | Log verbosity |
 | `resources.requests.cpu` | `100m` | CPU request |
