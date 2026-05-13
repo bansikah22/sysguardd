@@ -4,18 +4,6 @@ on:
   schedule:
     - cron: "0 3 1 * *"
   workflow_dispatch:
-  push:
-    branches:
-      - master
-    paths:
-      - Dockerfile
-      - .dockerignore
-      - CMakeLists.txt
-      - include/**
-      - src/**
-      - tests/**
-      - policies/**
-      - .github/workflows/docker-monthly.yml
 
 permissions:
   contents: read
