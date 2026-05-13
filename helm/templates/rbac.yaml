@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "sysguardd.serviceAccountName" . }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "sysguardd.fullname" . }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - nodes
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups: [""]
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+- apiGroups: [""]
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "sysguardd.fullname" . }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "sysguardd.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "sysguardd.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}

@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "sysguardd.fullname" . }}
+  labels:
+    {{- include "sysguardd.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "sysguardd.selectorLabels" . | nindent 6 }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.port }}"
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "sysguardd.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "sysguardd.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      hostNetwork: false
+      hostPID: false
+      
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      
+      terminationGracePeriodSeconds: {{ .Values.sysguardd.terminationGracePeriodSeconds }}
+      
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        
+        args:
+        - daemon
+        - --mode
+        - {{ .Values.sysguardd.mode }}
+        - --policy
+        - {{ .Values.sysguardd.policyFile }}
+        
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        
+        env:
+        - name: SYSGUARDD_LOG_LEVEL
+          value: {{ .Values.sysguardd.logLevel | quote }}
+        
+        {{- if .Values.sysguardd.liveness.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/sysguardd
+            - status
+          initialDelaySeconds: {{ .Values.sysguardd.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sysguardd.liveness.periodSeconds }}
+          failureThreshold: {{ .Values.sysguardd.liveness.failureThreshold }}
+        {{- end }}
+        
+        {{- if .Values.sysguardd.readiness.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/sysguardd
+            - status
+          initialDelaySeconds: {{ .Values.sysguardd.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sysguardd.readiness.periodSeconds }}
+          failureThreshold: {{ .Values.sysguardd.readiness.failureThreshold }}
+        {{- end }}
+        
+        volumeMounts:
+        - name: policy
+          mountPath: /etc/sysguardd
+          readOnly: true
+        - name: audit-logs
+          mountPath: /var/log/sysguardd
+        - name: proc
+          mountPath: /proc
+          readOnly: true
+        - name: sys
+          mountPath: /sys
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      
+      volumes:
+      - name: policy
+        configMap:
+          name: {{ include "sysguardd.fullname" . }}-policy
+          defaultMode: 0444
+      - name: audit-logs
+        emptyDir: {}
+      - name: proc
+        hostPath:
+          path: /proc
+          type: Directory
+      - name: sys
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 256Mi
