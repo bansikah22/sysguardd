@@ -76,30 +76,10 @@ jobs:
           ls -la sysguardd/
           echo "Chart verified in registry"
 
-      - name: Comment on release (if release event)
+      - name: Release summary (if release event)
         if: github.event_name == 'release'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const version = '${{ steps.chart_version.outputs.version }}';
-            const comment = `## Helm Chart Published
-            
-The Helm chart for this release has been published to Docker Hub OCI registry:
-
-\`\`\`bash
-helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm --version ${version}
-\`\`\`
-
-**Chart Details:**
-- Chart Version: ${version}
-- Registry: Docker Hub (bansikah/sysguardd-helm)
-- Install Method: OCI (modern Helm 3.8+)
-
-For detailed installation instructions, see [docs/KUBERNETES.md](docs/KUBERNETES.md)`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+        run: |
+          echo "Helm chart published to OCI registry"
+          echo "Chart Version: ${{ steps.chart_version.outputs.version }}"
+          echo "Install with:"
+          echo "helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm --version ${{ steps.chart_version.outputs.version }}"
