@@ -104,7 +104,22 @@ std::string PolicyEngine::normalize_abs_path(std::string_view path) {
     }
   }
 
-  return normalized.string();
+  // Canonicalize path to resolve symlinks and prevent bypass attacks (CWE-59)
+  std::error_code ec;
+  auto canonical = fs::canonical(normalized, ec);
+  if (ec) {
+    return {};  // Path doesn't exist or can't be resolved
+  }
+
+  // Re-check for ".." in the canonical path as an extra safeguard
+  const auto final_normalized = canonical.lexically_normal();
+  for (const auto& part : final_normalized) {
+    if (part == "..") {
+      return {};
+    }
+  }
+
+  return final_normalized.string();
 }
 
 }  // namespace sysguardd

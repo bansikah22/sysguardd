@@ -76,6 +76,9 @@ void Service::run(std::istream& input) {
     if (mode_ == Mode::enforce) {
       action = "sigkill";
       try {
+        // Note: TOCTOU race condition (CWE-367) exists between evaluation and mitigation.
+        // Process could exit and PID could be reused between decision and kill().
+        // Mitigator::kill_process() checks process existence to mitigate this.
         mitigator_.kill_process(event.pid);
         enforced = true;
       } catch (const std::exception& ex) {

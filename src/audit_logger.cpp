@@ -1,6 +1,7 @@
 #include "sysguardd/audit_logger.hpp"
 
 #include <chrono>
+#include <cstdio>
 #include <ctime>
 #include <iomanip>
 #include <ostream>
@@ -17,8 +18,14 @@ void AuditLogger::log(const ProcessEvent& event, const Decision& decision, const
   const auto now = std::chrono::system_clock::now();
   const std::time_t now_t = std::chrono::system_clock::to_time_t(now);
 
+  // Use thread-safe gmtime_r and check for NULL to prevent crashes (CWE-476)
+  struct std::tm tm_buf;
+  if (gmtime_r(&now_t, &tm_buf) == nullptr) {
+    tm_buf = {};  // Fallback to epoch (1970-01-01)
+  }
+
   std::ostringstream ts;
-  ts << std::put_time(std::gmtime(&now_t), "%Y-%m-%dT%H:%M:%SZ");
+  ts << std::put_time(&tm_buf, "%Y-%m-%dT%H:%M:%SZ");
 
   out_ << "{"
        << "\"timestamp\":\"" << ts.str() << "\","
@@ -36,9 +43,17 @@ void AuditLogger::log(const ProcessEvent& event, const Decision& decision, const
 
 std::string AuditLogger::json_escape(const std::string& value) {
   std::string escaped;
-  escaped.reserve(value.size());
+  escaped.reserve(value.size() * 2);  // Reserve extra for unicode escapes
 
-  for (const char c : value) {
+  for (unsigned char c : value) {
+    // Escape control characters (0x00-0x1F) as \uXXXX to prevent JSON injection (CWE-116)
+    if (c <= 0x1F) {
+      char buf[7];
+      snprintf(buf, sizeof(buf), "\\u%04x", c);
+      escaped += buf;
+      continue;
+    }
+
     switch (c) {
       case '\\':
         escaped += "\\\\";
@@ -46,17 +61,11 @@ std::string AuditLogger::json_escape(const std::string& value) {
       case '"':
         escaped += "\\\"";
         break;
-      case '\n':
-        escaped += "\\n";
-        break;
-      case '\r':
-        escaped += "\\r";
-        break;
-      case '\t':
-        escaped += "\\t";
+      case '\x7F':  // DEL character
+        escaped += "\\u007f";
         break;
       default:
-        escaped += c;
+        escaped += static_cast<char>(c);
     }
   }
 

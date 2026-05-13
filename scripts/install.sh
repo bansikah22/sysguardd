@@ -139,6 +139,13 @@ EOF
     exit 1
   fi
 
+  # Validate repo_url is a safe git URL to prevent command injection (CWE-78)
+  if [[ ! "${repo_url}" =~ ^(https?|git|ssh)://[a-zA-Z0-9._/-]+\.git$ ]] && \
+     [[ ! "${repo_url}" =~ ^git@[a-zA-Z0-9._-]+:[a-zA-Z0-9._/-]+\.git$ ]]; then
+    echo "Invalid repository URL format. Must be https://, git://, ssh:// or git@host:path format." >&2
+    exit 1
+  fi
+
   local workdir
   workdir="$(mktemp -d -t sysguardd-install-XXXXXX)"
 
@@ -150,6 +157,12 @@ EOF
   git clone --depth 1 "${repo_url}" "${workdir}/repo"
 
   if [[ -n "${ref}" ]]; then
+    # Validate ref contains only safe characters to prevent command injection (CWE-78)
+    if [[ ! "${ref}" =~ ^[a-zA-Z0-9/_\\.~-]+$ ]]; then
+      echo "Invalid git ref format. Must contain only alphanumeric, /, _, ., ~, or - characters." >&2
+      rm -rf "${workdir}"
+      exit 1
+    fi
     git -C "${workdir}/repo" fetch --depth 1 origin "${ref}" || true
     git -C "${workdir}/repo" checkout "${ref}"
   fi
