@@ -1,0 +1,52 @@
+# Build artifacts
+build/
+build-analysis/
+cmake-build-*/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+*.dSYM/
+
+# Generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Executables (be specific - don't match directories)
+/sysguardd
+/sysguardd_*test
+build/sysguardd
+build/sysguardd_*test
+*.exe
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Editor and IDE files
+.vscode/settings.json
+.idea/
+*.iml
+*.sublime-workspace
+.vim/
+*.vim
+.clang-format.local
+
+# Local configuration
+.env
+.env.local
+*.local
+
+# Development workflow
+.git/
+Todo.md
+

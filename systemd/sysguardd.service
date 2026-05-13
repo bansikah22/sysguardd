@@ -1,0 +1,31 @@
+[Unit]
+Description=SysGuardd Runtime Process Enforcement Daemon
+Documentation=https://github.com/your-org/sysguardd
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/sysguardd --mode monitor --policy /etc/sysguardd/default.policy
+Restart=on-failure
+RestartSec=2s
+
+# Security hardening (review and adjust per deployment)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+
+# Keep default root user for now because enforcement may require broad signaling permissions.
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+# SysGuardd baseline policy format
+# deny_executable=/absolute/path/to/bin
+# deny_prefix=/absolute/path/prefix/
+
+deny_executable=/usr/bin/nc
+deny_executable=/usr/bin/ncat
+deny_executable=/usr/bin/socat
+deny_prefix=/tmp/
+deny_prefix=/dev/shm/
