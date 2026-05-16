@@ -1,6 +1,8 @@
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
+#include "sysguardd/alert_dispatcher.hpp"
 #include "sysguardd/audit_logger.hpp"
 #include "sysguardd/cli.hpp"
 #include "sysguardd/config.hpp"
@@ -18,9 +20,17 @@ int main(int argc, char** argv) {
       const auto cfg = sysguardd::parse_config(argc, argv);
       auto engine = sysguardd::PolicyEngine::load_from_file(cfg.policy_path);
       sysguardd::Mitigator mitigator;
-      sysguardd::AuditLogger logger(std::cout);
+      sysguardd::AuditLogger logger(std::cout, cfg.node_id, cfg.policy_version);
 
-      sysguardd::Service svc(cfg.mode, std::move(engine), mitigator, logger);
+      // Create alerting dispatcher only when explicitly enabled
+      std::unique_ptr<sysguardd::AlertDispatcher> dispatcher;
+      if (cfg.alert.enabled) {
+        dispatcher = std::make_unique<sysguardd::AlertDispatcher>(
+            cfg.alert, cfg.node_id, cfg.policy_version);
+      }
+
+      sysguardd::Service svc(cfg.mode, std::move(engine), mitigator, logger,
+                             dispatcher.get());
       svc.run(std::cin);
       return 0;
     }
@@ -32,3 +42,4 @@ int main(int argc, char** argv) {
     return 1;
   }
 }
+

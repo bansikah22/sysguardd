@@ -2,7 +2,9 @@
 
 #include <chrono>
 #include <cctype>
+#include <ctime>
 #include <exception>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -37,10 +39,44 @@ ProcessEvent parse_event_line(const std::string& line) {
   return evt;
 }
 
+std::string iso8601_now() {
+  const auto now = std::chrono::system_clock::now();
+  const std::time_t now_t = std::chrono::system_clock::to_time_t(now);
+  struct std::tm tm_buf;
+  if (gmtime_r(&now_t, &tm_buf) == nullptr) {
+    tm_buf = {};
+  }
+  std::ostringstream ts;
+  ts << std::put_time(&tm_buf, "%Y-%m-%dT%H:%M:%SZ");
+  return ts.str();
+}
+
 }  // namespace
 
-Service::Service(const Mode mode, PolicyEngine policy, Mitigator& mitigator, AuditLogger& logger)
-  : mode_(mode), policy_(std::move(policy)), mitigator_(mitigator), logger_(logger) {}
+// ---- Static helpers ---------------------------------------------------------
+
+std::string Service::compute_severity(const Decision& d, Mode mode, bool enforce_failure) {
+  if (enforce_failure) return "critical";
+  if (d.allowed) return "info";
+  if (mode == Mode::enforce) return "critical";
+  return "warning";
+}
+
+std::string Service::format_event_id(const uint64_t counter) {
+  std::ostringstream ss;
+  ss << std::hex << std::setw(16) << std::setfill('0') << counter;
+  return ss.str();
+}
+
+// ---- Service ----------------------------------------------------------------
+
+Service::Service(const Mode mode, PolicyEngine policy, Mitigator& mitigator, AuditLogger& logger,
+                 AlertDispatcher* dispatcher)
+    : mode_(mode),
+      policy_(std::move(policy)),
+      mitigator_(mitigator),
+      logger_(logger),
+      dispatcher_(dispatcher) {}
 
 void Service::run(std::istream& input) {
   std::string line;
@@ -63,9 +99,11 @@ void Service::run(std::istream& input) {
       continue;
     }
 
+    const std::string event_id = format_event_id(event_counter_.fetch_add(1));
     const Decision decision = policy_.evaluate(event);
+
     if (decision.allowed) {
-      logger_.log(event, decision, false, "", "");
+      logger_.log(event, decision, false, "", "", event_id, "info");
       continue;
     }
 
@@ -86,7 +124,24 @@ void Service::run(std::istream& input) {
       }
     }
 
-    logger_.log(event, decision, enforced, action, action_error);
+    const bool enforce_failure = !action_error.empty();
+    const std::string severity = compute_severity(decision, mode_, enforce_failure);
+
+    logger_.log(event, decision, enforced, action, action_error, event_id, severity);
+
+    // Trigger alert for any deny event (monitor: warning, enforce: critical)
+    if (dispatcher_ != nullptr) {
+      AlertEvent alert;
+      alert.event_id = event_id;
+      alert.severity = severity;
+      alert.timestamp = iso8601_now();
+      alert.pid = event.pid;
+      alert.ppid = event.ppid;
+      alert.exe = event.exe;
+      alert.reason = decision.reason;
+      alert.action = action;
+      dispatcher_->dispatch(std::move(alert));
+    }
   }
 }
 

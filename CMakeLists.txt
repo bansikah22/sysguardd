@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(sysguardd LANGUAGES C CXX)
 
+find_package(OpenSSL REQUIRED)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -21,13 +23,14 @@ add_library(sysguardd_core
   src/policy_engine.cpp
   src/mitigator.cpp
   src/audit_logger.cpp
+  src/alert_dispatcher.cpp
   src/service.cpp
 )
 
 target_include_directories(sysguardd_core PUBLIC include)
 target_compile_options(sysguardd_core PRIVATE -Wall -Wextra -Wpedantic -Werror)
 
-target_link_libraries(sysguardd_core PRIVATE pthread)
+target_link_libraries(sysguardd_core PRIVATE pthread OpenSSL::SSL OpenSSL::Crypto)
 
 add_executable(sysguardd src/main.cpp)
 target_link_libraries(sysguardd PRIVATE sysguardd_core)
@@ -36,3 +39,11 @@ enable_testing()
 add_executable(sysguardd_policy_test tests/test_policy.cpp)
 target_link_libraries(sysguardd_policy_test PRIVATE sysguardd_core)
 add_test(NAME sysguardd_policy_test COMMAND sysguardd_policy_test)
+
+add_executable(sysguardd_alert_dispatcher_test tests/test_alert_dispatcher.cpp)
+target_link_libraries(sysguardd_alert_dispatcher_test PRIVATE sysguardd_core)
+add_test(NAME sysguardd_alert_dispatcher_test COMMAND sysguardd_alert_dispatcher_test)
+
+add_executable(sysguardd_config_dotenv_test tests/test_config_dotenv.cpp)
+target_link_libraries(sysguardd_config_dotenv_test PRIVATE sysguardd_core)
+add_test(NAME sysguardd_config_dotenv_test COMMAND sysguardd_config_dotenv_test)

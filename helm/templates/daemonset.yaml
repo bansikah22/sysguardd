@@ -53,6 +53,25 @@ spec:
         - {{ .Values.sysguardd.mode }}
         - --policy
         - {{ .Values.sysguardd.policyFile }}
+        {{- if .Values.sysguardd.policyVersion }}
+        - --policy-version
+        - {{ .Values.sysguardd.policyVersion | quote }}
+        {{- end }}
+        {{- if .Values.sysguardd.alert.enabled }}
+        - --alert-enabled
+        - --alert-webhook-url
+        {{- if .Values.sysguardd.alert.webhookSecretName }}
+        - $(SYSGUARDD_ALERT_WEBHOOK_URL)
+        {{- else }}
+        - {{ .Values.sysguardd.alert.webhookUrl | quote }}
+        {{- end }}
+        - --alert-min-severity
+        - {{ .Values.sysguardd.alert.minSeverity | quote }}
+        - --alert-dedupe-window
+        - {{ .Values.sysguardd.alert.dedupeWindowSec | quote }}
+        - --alert-rate-limit
+        - {{ .Values.sysguardd.alert.rateLimitPerMinute | quote }}
+        {{- end }}
         
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
@@ -60,6 +79,17 @@ spec:
         env:
         - name: SYSGUARDD_LOG_LEVEL
           value: {{ .Values.sysguardd.logLevel | quote }}
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        {{- if and .Values.sysguardd.alert.enabled .Values.sysguardd.alert.webhookSecretName }}
+        - name: SYSGUARDD_ALERT_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.sysguardd.alert.webhookSecretName }}
+              key: webhook-url
+        {{- end }}
         
         {{- if .Values.sysguardd.liveness.enabled }}
         livenessProbe:

@@ -50,3 +50,11 @@ Thumbs.db
 .git/
 Todo.md
 
+# Docs build artifacts
+site/
+.venv-docs/
+
+# Python cache (docs tooling)
+__pycache__/
+*.pyc
+

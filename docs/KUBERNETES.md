@@ -64,7 +64,15 @@ helm upgrade sysguardd ./helm \
 | `image.repository` | `bansikah/sysguardd` | Container image name |
 | `image.tag` | `v0.1.0` | Image tag |
 | `sysguardd.mode` | `monitor` | Enforcement mode: `monitor` or `enforce` |
+| `sysguardd.nodeId` | `""` | Override node label in audit logs (defaults to hostname) |
+| `sysguardd.policyVersion` | `""` | Policy version tag emitted in audit logs |
 | `sysguardd.logLevel` | `info` | Log verbosity |
+| `sysguardd.alert.enabled` | `false` | Enable real-time webhook alerting |
+| `sysguardd.alert.webhookUrl` | `""` | Webhook URL (Slack/Teams). Use a Secret instead — see below. |
+| `sysguardd.alert.minSeverity` | `warning` | Minimum severity to dispatch: `info`, `warning`, `critical` |
+| `sysguardd.alert.dedupeWindowSec` | `60` | Suppress duplicate exe+severity alerts within this window (seconds) |
+| `sysguardd.alert.rateLimitPerMinute` | `60` | Max alerts dispatched per minute |
+| `sysguardd.alert.webhookSecretName` | `""` | Name of a Kubernetes Secret holding `webhook-url` key |
 | `resources.requests.cpu` | `100m` | CPU request |
 | `resources.limits.cpu` | `500m` | CPU limit |
 | `resources.limits.memory` | `512Mi` | Memory limit |
@@ -84,6 +92,65 @@ EOF
 
 helm install sysguardd ./helm -f custom-values.yaml
 ```
+
+#### Enabling Real-Time Alerting via Helm
+
+**Option A — inline URL (dev/test only, avoid in production):**
+```bash
+helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.webhookUrl=http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --set sysguardd.alert.minSeverity=critical
+```
+
+**Option B — Secret-driven URL (recommended for production):**
+
+Store the webhook URL in a Kubernetes Secret so it is never embedded in Helm values or pod specs:
+
+```bash
+# Create the secret
+kubectl create secret generic sysguardd-alerts \
+  --namespace kube-system \
+  --from-literal=webhook-url=http://hooks.slack.com/services/XXX/YYY/ZZZ
+```
+
+```bash
+# Reference it in Helm
+helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.webhookSecretName=sysguardd-alerts \
+  --set sysguardd.alert.minSeverity=critical \
+  --set sysguardd.alert.dedupeWindowSec=120 \
+  --set sysguardd.alert.rateLimitPerMinute=30
+```
+
+The Helm chart mounts the Secret as an environment variable `SYSGUARDD_ALERT_WEBHOOK_URL` and the DaemonSet template passes it to the daemon via `--alert-webhook-url`.
+
+**Tuning for noisy clusters (monitor mode):**
+```bash
+helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.minSeverity=warning \
+  --set sysguardd.alert.dedupeWindowSec=300 \
+  --set sysguardd.alert.rateLimitPerMinute=10
+```
+
+#### Node Labelling and Policy Versioning
+
+Tag every audit log line with a node identifier and policy version for easy SIEM correlation:
+
+```bash
+helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.policyVersion=v1.2.3
+```
+
+`node_id` is automatically set to each pod's `spec.nodeName` via the Downward API — no manual override is needed in Kubernetes.
 
 #### Verify Helm Deployment
 
@@ -283,7 +350,11 @@ kubectl run test-shell --image=alpine:latest --rm -it -- /bin/sh
 
 # In another terminal, watch logs for policy violations
 kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd \
-  --tail=0 -f | grep "deny"
+  --tail=0 -f | grep '"decision":"deny"'
+
+# Pretty-print deny events (requires jq)
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd \
+  --tail=100 | grep '"decision":"deny"' | jq '{event_id,severity,node_id,exe,reason}'
 ```
 
 #### 3. Review Deny Events
@@ -356,6 +427,28 @@ kubectl describe cm sysguardd-policy -n kube-system
 
 # Check volume mount in pod
 kubectl exec -it <pod-name> -n kube-system -- ls -la /etc/sysguardd/
+```
+
+### Alerts Not Firing
+
+```bash
+# Confirm alerting is enabled in the running pod args
+kubectl get pod -n kube-system -l app.kubernetes.io/name=sysguardd -o jsonpath='{.items[0].spec.containers[0].args}'
+# Expected: [..., "--alert-enabled", "--alert-webhook-url", "http://...", ...]
+
+# Check for webhook delivery failures in pod stderr
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd | grep 'alert:'
+# Failure example: alert: failed to connect to webhook host: hooks.slack.com
+
+# Verify the Secret exists and has the correct key
+kubectl get secret sysguardd-alerts -n kube-system -o jsonpath='{.data.webhook-url}' | base64 -d
+
+# Check if alerts are being rate-limited or deduped
+# If the same exe triggers many times, the dedupe window may be suppressing them.
+# Temporarily lower --alert-dedupe-window to 5 for testing:
+helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.alert.dedupeWindowSec=5
 ```
 
 ### High CPU / Memory Usage

@@ -33,6 +33,13 @@ sysguardd daemon [options]
 - `--background, -b` - Run in background (daemon mode)
 - `--mode [monitor|enforce]` - Set enforcement mode (default: monitor)
 - `--policy <file>` - Path to policy file (default: ./policies/default.policy)
+- `--node-id <id>` - Override node identifier emitted in audit logs (default: system hostname)
+- `--policy-version <ver>` - Tag emitted in audit logs for policy traceability
+- `--alert-enabled` - Enable the real-time webhook alerting dispatcher
+- `--alert-webhook-url <url>` - HTTP webhook URL to POST alerts to (Slack/Teams compatible)
+- `--alert-min-severity [info|warning|critical]` - Minimum severity to dispatch (default: warning)
+- `--alert-dedupe-window <sec>` - Suppress duplicate alerts for the same exe+severity within this window (default: 60)
+- `--alert-rate-limit <N>` - Maximum alerts dispatched per minute (default: 60)
 - `--help, -h` - Show help message
 
 **Examples:**
@@ -49,6 +56,23 @@ sysguardd daemon --policy /etc/sysguardd/strict.policy
 
 # Run in enforce mode with custom policy in background
 sysguardd daemon -b --mode enforce --policy /var/sysguardd/prod.policy
+
+# Run with node labelling and policy version for traceable audit logs
+sysguardd daemon --node-id k8s-node-01 --policy-version v1.2.3
+
+# Enable Slack webhook alerts for critical deny events only
+sysguardd daemon --mode enforce \
+  --alert-enabled \
+  --alert-webhook-url http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --alert-min-severity critical
+
+# Enable alerts with noise-reduction tuning
+sysguardd daemon --mode monitor \
+  --alert-enabled \
+  --alert-webhook-url http://hooks.example.com/sysguardd \
+  --alert-min-severity warning \
+  --alert-dedupe-window 120 \
+  --alert-rate-limit 20
 ```
 
 ---

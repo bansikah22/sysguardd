@@ -37,7 +37,7 @@ Create two secrets:
 
 ### Step 3: Verify Workflow Configuration
 
-Check `.github/workflows/helm-oci-push.yml`:
+Check [Workflow File](https://github.com/bansikah22/sysguardd/blob/master/.github/workflows/helm-oci-push.yml):
 
 ```yaml
 - name: Log in to Docker Hub
@@ -274,4 +274,4 @@ gh workflow run helm-oci-push.yml
 - [Docker Hub Access Tokens](https://docs.docker.com/docker-hub/access-tokens/)
 - [GitHub Secrets](https://docs.github.com/actions/security-guides/encrypted-secrets)
 - [Helm OCI Registry Guide](https://helm.sh/docs/topics/registries/)
-- [Workflow File](.github/workflows/helm-oci-push.yml)
+- [Workflow File](https://github.com/bansikah22/sysguardd/blob/master/.github/workflows/helm-oci-push.yml)

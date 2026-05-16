@@ -9,10 +9,12 @@
 
 namespace sysguardd {
 
-AuditLogger::AuditLogger(std::ostream& out) : out_(out) {}
+AuditLogger::AuditLogger(std::ostream& out, std::string node_id, std::string policy_version)
+    : out_(out), node_id_(std::move(node_id)), policy_version_(std::move(policy_version)) {}
 
 void AuditLogger::log(const ProcessEvent& event, const Decision& decision, const bool enforced,
-                      const std::string& action, const std::string& action_error) {
+                      const std::string& action, const std::string& action_error,
+                      const std::string& event_id, const std::string& severity) {
   std::lock_guard<std::mutex> lock(mu_);
 
   const auto now = std::chrono::system_clock::now();
@@ -29,6 +31,10 @@ void AuditLogger::log(const ProcessEvent& event, const Decision& decision, const
 
   out_ << "{"
        << "\"timestamp\":\"" << ts.str() << "\","
+       << "\"event_id\":\"" << json_escape(event_id) << "\","
+       << "\"severity\":\"" << json_escape(severity) << "\","
+       << "\"node_id\":\"" << json_escape(node_id_) << "\","
+       << "\"policy_version\":\"" << json_escape(policy_version_) << "\","
        << "\"pid\":" << event.pid << ","
        << "\"ppid\":" << event.ppid << ","
        << "\"exe\":\"" << json_escape(event.exe) << "\","

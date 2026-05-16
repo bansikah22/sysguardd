@@ -75,6 +75,29 @@ sysguardd:
   policyFile: /etc/sysguardd/default.policy
   logLevel: info
   keepStdinOpen: true
+
+  # Node identifier emitted in every audit log line.
+  # Defaults to the pod's spec.nodeName via the Downward API when left empty.
+  nodeId: ""
+
+  # Optional policy version tag emitted in every audit log line for SIEM correlation.
+  policyVersion: ""
+
+  # Real-time webhook alerting (disabled by default).
+  # Enable with alert.enabled=true and supply a webhook URL.
+  alert:
+    enabled: false
+    # Inline URL — avoid in production; prefer webhookSecretName instead.
+    webhookUrl: ""
+    # Name of a Kubernetes Secret with a 'webhook-url' key.
+    # When set, the chart mounts the value as SYSGUARDD_ALERT_WEBHOOK_URL.
+    webhookSecretName: ""
+    # Minimum severity to dispatch: info | warning | critical
+    minSeverity: "warning"
+    # Suppress duplicate exe+severity alerts within this window (seconds)
+    dedupeWindowSec: 60
+    # Maximum alerts dispatched per minute (token-bucket rate limit)
+    rateLimitPerMinute: 60
   
   # Liveliness probe settings
   liveness:
