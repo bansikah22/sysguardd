@@ -1,0 +1,1156 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Runtime process enforcement and observability for Linux and Kubernetes">
+      
+      
+      
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/OPERATIONS/">
+      
+      
+        <link rel="prev" href="../CLI/">
+      
+      
+        <link rel="next" href="../KUBERNETES/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+    
+    
+      
+        <title>Operations - SysGuardd Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sysguardd-operations-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SysGuardd Documentation" class="md-header__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SysGuardd Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SysGuardd Documentation" class="md-nav__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SysGuardd Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMPONENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Purpose
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitor-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enforce Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-configuration-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested Configuration Keys
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-authoring-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Authoring Guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollout-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollout Strategy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-time-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-Time Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-Time Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Alerts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-configuration-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Configuration Reference
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#severity-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Severity Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audit-log-fields-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audit Log Fields Added
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Safety Guarantees
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-alerting-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy Alerting Recommendations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#incident-response-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Incident Response Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-reliability-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Reliability Checks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maintenance Tasks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#change-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Change Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-runbook-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimal Runbook Template
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KUBERNETES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_QUICK_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_PUBLISHING_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Publishing Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install & Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EVENT_INJECTION_TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Injection Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Purpose
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitor-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enforce Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-configuration-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested Configuration Keys
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-authoring-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Authoring Guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollout-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollout Strategy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-time-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-Time Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-Time Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Alerts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-configuration-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Configuration Reference
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#severity-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Severity Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audit-log-fields-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audit Log Fields Added
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Safety Guarantees
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-alerting-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy Alerting Recommendations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#incident-response-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Incident Response Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-reliability-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Reliability Checks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maintenance Tasks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#change-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Change Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-runbook-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimal Runbook Template
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="sysguardd-operations-guide">SysGuardd Operations Guide<a class="headerlink" href="#sysguardd-operations-guide" title="Permanent link">&para;</a></h1>
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>This guide defines how to run, configure, and operate SysGuardd safely in development and production environments.</p>
+<h2 id="runtime-modes">Runtime Modes<a class="headerlink" href="#runtime-modes" title="Permanent link">&para;</a></h2>
+<h3 id="monitor-mode">Monitor Mode<a class="headerlink" href="#monitor-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Captures and evaluates process events.</li>
+<li>Does not terminate processes.</li>
+<li>Best for baseline learning and policy tuning.</li>
+</ul>
+<h3 id="enforce-mode">Enforce Mode<a class="headerlink" href="#enforce-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Captures and evaluates process events.</li>
+<li>Terminates unauthorized processes using <code>SIGKILL</code>.</li>
+<li>Requires mature policy coverage and alerting.</li>
+</ul>
+<h2 id="suggested-configuration-keys">Suggested Configuration Keys<a class="headerlink" href="#suggested-configuration-keys" title="Permanent link">&para;</a></h2>
+<p>Use these keys as the initial configuration contract.</p>
+<ul>
+<li><code>mode</code>: <code>monitor</code> or <code>enforce</code></li>
+<li><code>policy.source</code>: <code>file</code> or <code>remote</code></li>
+<li><code>policy.path</code>: local policy file path</li>
+<li><code>policy.refresh_interval_seconds</code>: remote policy refresh cadence</li>
+<li><code>telemetry.format</code>: <code>json</code> or <code>grpc</code></li>
+<li><code>telemetry.endpoint</code>: remote sink for gRPC stream</li>
+<li><code>log.level</code>: <code>info</code>, <code>warn</code>, <code>error</code>, <code>debug</code></li>
+</ul>
+<h2 id="policy-authoring-guidelines">Policy Authoring Guidelines<a class="headerlink" href="#policy-authoring-guidelines" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Start with monitor mode and capture at least 7 days of process data.</li>
+<li>Convert known-bad executables and suspicious paths into deny rules.</li>
+<li>Keep rules explicit and reviewable.</li>
+<li>Version all policy changes in source control.</li>
+<li>Require peer review for policy updates before enforce rollout.</li>
+</ul>
+<h2 id="rollout-strategy">Rollout Strategy<a class="headerlink" href="#rollout-strategy" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Deploy in monitor mode to a non-critical environment.</li>
+<li>Validate event volume, false positives, and expected process baselines.</li>
+<li>Apply policy updates until false positives are near zero.</li>
+<li>Roll out enforce mode to a small canary subset.</li>
+<li>Expand enforce coverage incrementally.</li>
+</ol>
+<h2 id="real-time-alerting">Real-Time Alerting<a class="headerlink" href="#real-time-alerting" title="Permanent link">&para;</a></h2>
+<p>SysGuardd includes a built-in non-blocking webhook dispatcher. It is <strong>disabled by default</strong> and opt-in via flags.</p>
+<h3 id="enabling-alerts">Enabling Alerts<a class="headerlink" href="#enabling-alerts" title="Permanent link">&para;</a></h3>
+<p>For local runs, put <code>SYSGUARDD_ALERT_WEBHOOK_URL=...</code> in a repo-root <code>.env</code> file. The daemon loads it automatically, and <code>.env</code> is already ignored by git.</p>
+<pre><code class="language-bash">sysguardd daemon --mode enforce \
+  --alert-enabled \
+  --alert-webhook-url https://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --alert-min-severity critical
+</code></pre>
+<p>For monitor-mode deployments during policy tuning:</p>
+<pre><code class="language-bash">sysguardd daemon --mode monitor \
+  --alert-enabled \
+  --alert-webhook-url http://hooks.example.com/sysguardd \
+  --alert-min-severity warning \
+  --alert-dedupe-window 120 \
+  --alert-rate-limit 20
+</code></pre>
+<h3 id="alert-configuration-reference">Alert Configuration Reference<a class="headerlink" href="#alert-configuration-reference" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--alert-enabled</code></td>
+<td>off</td>
+<td>Enable the dispatcher. Without this flag no dispatcher is created.</td>
+</tr>
+<tr>
+<td><code>--alert-webhook-url</code></td>
+<td>—</td>
+<td>HTTP URL to POST alerts to. Only <code>http://</code> is supported.</td>
+</tr>
+<tr>
+<td><code>--alert-min-severity</code></td>
+<td><code>warning</code></td>
+<td>Drop alerts below this level. Values: <code>info</code>, <code>warning</code>, <code>critical</code>.</td>
+</tr>
+<tr>
+<td><code>--alert-dedupe-window</code></td>
+<td><code>60</code></td>
+<td>Seconds. Suppress repeated alerts for the same exe+severity.</td>
+</tr>
+<tr>
+<td><code>--alert-rate-limit</code></td>
+<td><code>60</code></td>
+<td>Max alerts dispatched per minute. Excess alerts are dropped silently.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="severity-levels">Severity Levels<a class="headerlink" href="#severity-levels" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Process allowed by policy</td>
+<td><code>info</code></td>
+</tr>
+<tr>
+<td>Process denied in monitor mode</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td>Process denied in enforce mode</td>
+<td><code>critical</code></td>
+</tr>
+<tr>
+<td>Mitigation (SIGKILL) failed</td>
+<td><code>critical</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="audit-log-fields-added">Audit Log Fields Added<a class="headerlink" href="#audit-log-fields-added" title="Permanent link">&para;</a></h3>
+<p>Every event log line now includes:</p>
+<pre><code class="language-json">{
+  &quot;event_id&quot;: &quot;0000000000000000&quot;,
+  &quot;severity&quot;: &quot;critical&quot;,
+  &quot;node_id&quot;: &quot;k8s-node-01&quot;,
+  &quot;policy_version&quot;: &quot;v1.2.3&quot;,
+  ...
+}
+</code></pre>
+<ul>
+<li><code>event_id</code> — monotonic hex counter, unique per daemon run. Use this to correlate audit log entries with webhook alerts.</li>
+<li><code>node_id</code> — defaults to system hostname; override with <code>--node-id</code>.</li>
+<li><code>policy_version</code> — optional tag set via <code>--policy-version</code>.</li>
+</ul>
+<h3 id="safety-guarantees">Safety Guarantees<a class="headerlink" href="#safety-guarantees" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Alert dispatch <strong>never blocks the event loop</strong>. Events are queued and delivered by a background thread.</li>
+<li>If the webhook is unreachable, the failure is logged to stderr and the daemon continues.</li>
+<li>If the queue reaches 128 entries (e.g. webhook is down), the oldest queued alert is dropped to prevent unbounded memory growth.</li>
+<li><code>--alert-dedupe-window</code> and <code>--alert-rate-limit</code> prevent alert storms from overwhelming downstream notification services.</li>
+</ul>
+<h2 id="legacy-alerting-recommendations">Legacy Alerting Recommendations<a class="headerlink" href="#legacy-alerting-recommendations" title="Permanent link">&para;</a></h2>
+<p>Create alerts at your SIEM/monitoring layer for:
+- Unauthorized process killed.
+- Mitigation failed.
+- Ring buffer drop rate above threshold.
+- Telemetry export failures.
+- Policy fetch or signature verification failures.</p>
+<h2 id="incident-response-checklist">Incident Response Checklist<a class="headerlink" href="#incident-response-checklist" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Capture blocked executable path and command arguments.</li>
+<li>Identify parent process and user context.</li>
+<li>Determine whether the event is malicious or false positive.</li>
+<li>If false positive, patch policy and re-test in monitor mode.</li>
+<li>If malicious, preserve evidence and rotate compromised credentials.</li>
+</ol>
+<h2 id="performance-and-reliability-checks">Performance and Reliability Checks<a class="headerlink" href="#performance-and-reliability-checks" title="Permanent link">&para;</a></h2>
+<p>Track the following indicators:
+- Event ingestion rate
+- Policy decision latency
+- Mitigation execution latency
+- Ring buffer utilization and drop rate
+- CPU and memory footprint of daemon</p>
+<h2 id="maintenance-tasks">Maintenance Tasks<a class="headerlink" href="#maintenance-tasks" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Rotate logs and archive high-fidelity audit trails.</li>
+<li>Review policy exceptions monthly.</li>
+<li>Re-test enforcement after kernel upgrades.</li>
+<li>Validate integration endpoints and certificates.</li>
+</ul>
+<h2 id="change-management">Change Management<a class="headerlink" href="#change-management" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Every production policy change should include:</li>
+<li>Change reason</li>
+<li>Risk assessment</li>
+<li>Rollback procedure</li>
+<li>Approval record</li>
+</ul>
+<h2 id="minimal-runbook-template">Minimal Runbook Template<a class="headerlink" href="#minimal-runbook-template" title="Permanent link">&para;</a></h2>
+<p>Use this template for on-call handoffs:
+- Service owner
+- Escalation contacts
+- Current mode (monitor/enforce)
+- Policy version
+- Last deployment timestamp
+- Known exceptions
+- Rollback command/process</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      
+    
+  </body>
+</html>

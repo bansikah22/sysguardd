@@ -1,0 +1,1734 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Runtime process enforcement and observability for Linux and Kubernetes">
+      
+      
+      
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/KUBERNETES/">
+      
+      
+        <link rel="prev" href="../OPERATIONS/">
+      
+      
+        <link rel="next" href="../HELM_DISTRIBUTION/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+    
+    
+      
+        <title>Kubernetes - SysGuardd Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubernetes-testing-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SysGuardd Documentation" class="md-header__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SysGuardd Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kubernetes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SysGuardd Documentation" class="md-nav__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SysGuardd Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMPONENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-from-published-helm-chart-oci-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install from Published Helm Chart (OCI Registry)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-helm-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Helm (Recommended)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method 1: Helm (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-via-helm-local-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install via Helm - Local Chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-helm-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Helm Values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-real-time-alerting-via-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Real-Time Alerting via Helm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-labelling-and-policy-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Labelling and Policy Versioning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-helm-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify Helm Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uninstall" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstall
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Kustomize
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method 2: Kustomize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-with-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy with Kustomize
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-kustomize-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify Kustomize Deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-raw-kubectl-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 3: Raw kubectl Manifests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-testing-kind-kubernetes-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Testing: kind (Kubernetes in Docker)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-testing-minikube" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Node Testing: minikube
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-testing-monitor-enforce-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Testing: Monitor → Enforce Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy Testing: Monitor → Enforce Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-deploy-in-monitor-mode-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Deploy in Monitor Mode (Default)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-generate-traffic-and-observe-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Generate Traffic and Observe Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-review-deny-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Review Deny Events
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-update-policy-if-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Update Policy if Needed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-switch-to-enforce-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Switch to Enforce Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-verify-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Verify Enforcement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod-not-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pod Not Starting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-denied-rbac-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Denied / RBAC Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-not-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Not Loading
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerts-not-firing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerts Not Firing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-cpu-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      High CPU / Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-image-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Image Building
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps (Phase 2)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_QUICK_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_PUBLISHING_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Publishing Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install & Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EVENT_INJECTION_TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Injection Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-from-published-helm-chart-oci-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install from Published Helm Chart (OCI Registry)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-helm-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Helm (Recommended)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method 1: Helm (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-via-helm-local-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install via Helm - Local Chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-helm-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Helm Values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-real-time-alerting-via-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Real-Time Alerting via Helm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-labelling-and-policy-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Labelling and Policy Versioning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-helm-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify Helm Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uninstall" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstall
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Kustomize
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method 2: Kustomize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-with-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy with Kustomize
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-kustomize-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify Kustomize Deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-raw-kubectl-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 3: Raw kubectl Manifests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-testing-kind-kubernetes-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Testing: kind (Kubernetes in Docker)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-testing-minikube" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Node Testing: minikube
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-testing-monitor-enforce-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Testing: Monitor → Enforce Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy Testing: Monitor → Enforce Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-deploy-in-monitor-mode-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Deploy in Monitor Mode (Default)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-generate-traffic-and-observe-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Generate Traffic and Observe Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-review-deny-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Review Deny Events
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-update-policy-if-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Update Policy if Needed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-switch-to-enforce-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Switch to Enforce Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-verify-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Verify Enforcement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod-not-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pod Not Starting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-denied-rbac-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Denied / RBAC Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-not-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Not Loading
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerts-not-firing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerts Not Firing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-cpu-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      High CPU / Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-image-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Image Building
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps (Phase 2)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="kubernetes-testing-guide">Kubernetes Testing Guide<a class="headerlink" href="#kubernetes-testing-guide" title="Permanent link">&para;</a></h1>
+<p>This guide shows how to deploy and test SysGuardd on Kubernetes clusters using different methods.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Kubernetes cluster (1.20+)</li>
+<li><code>kubectl</code> configured to access your cluster</li>
+<li>Helm 3.8+ (for OCI registry support)</li>
+<li>Docker image available (local or public registry)</li>
+</ul>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="install-from-published-helm-chart-oci-registry">Install from Published Helm Chart (OCI Registry)<a class="headerlink" href="#install-from-published-helm-chart-oci-registry" title="Permanent link">&para;</a></h3>
+<p>The easiest way for end-users to install SysGuardd:</p>
+<pre><code class="language-bash"># Install latest version from Docker Hub OCI registry
+helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm \
+  --namespace kube-system \
+  --create-namespace
+
+# Verify deployment
+kubectl get daemonset -n kube-system sysguardd
+kubectl get pods -n kube-system -l app=sysguardd
+</code></pre>
+<p>For details on using the published chart, see <a href="../HELM_DISTRIBUTION/">docs/HELM_DISTRIBUTION.md</a>.</p>
+<h2 id="deployment-methods">Deployment Methods<a class="headerlink" href="#deployment-methods" title="Permanent link">&para;</a></h2>
+<h3 id="method-1-helm-recommended">Method 1: Helm (Recommended)<a class="headerlink" href="#method-1-helm-recommended" title="Permanent link">&para;</a></h3>
+<p>Helm provides the most flexible and production-ready deployment model.</p>
+<h4 id="install-via-helm-local-chart">Install via Helm - Local Chart<a class="headerlink" href="#install-via-helm-local-chart" title="Permanent link">&para;</a></h4>
+<p><strong>From local chart (for development):</strong></p>
+<pre><code class="language-bash">helm install sysguardd ./helm \
+  --namespace kube-system \
+  --create-namespace
+</code></pre>
+<p><strong>With monitor mode (default):</strong></p>
+<pre><code class="language-bash">helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=monitor
+</code></pre>
+<p><strong>Switch to enforce mode after validation:</strong></p>
+<pre><code class="language-bash">helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce
+</code></pre>
+<h4 id="common-helm-values">Common Helm Values<a class="headerlink" href="#common-helm-values" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image.repository</code></td>
+<td><code>bansikah/sysguardd</code></td>
+<td>Container image name</td>
+</tr>
+<tr>
+<td><code>image.tag</code></td>
+<td><code>v0.1.0</code></td>
+<td>Image tag</td>
+</tr>
+<tr>
+<td><code>sysguardd.mode</code></td>
+<td><code>monitor</code></td>
+<td>Enforcement mode: <code>monitor</code> or <code>enforce</code></td>
+</tr>
+<tr>
+<td><code>sysguardd.nodeId</code></td>
+<td><code>""</code></td>
+<td>Override node label in audit logs (defaults to hostname)</td>
+</tr>
+<tr>
+<td><code>sysguardd.policyVersion</code></td>
+<td><code>""</code></td>
+<td>Policy version tag emitted in audit logs</td>
+</tr>
+<tr>
+<td><code>sysguardd.logLevel</code></td>
+<td><code>info</code></td>
+<td>Log verbosity</td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.enabled</code></td>
+<td><code>false</code></td>
+<td>Enable real-time webhook alerting</td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.webhookUrl</code></td>
+<td><code>""</code></td>
+<td>Webhook URL (Slack/Teams). Use a Secret instead — see below.</td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.minSeverity</code></td>
+<td><code>warning</code></td>
+<td>Minimum severity to dispatch: <code>info</code>, <code>warning</code>, <code>critical</code></td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.dedupeWindowSec</code></td>
+<td><code>60</code></td>
+<td>Suppress duplicate exe+severity alerts within this window (seconds)</td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.rateLimitPerMinute</code></td>
+<td><code>60</code></td>
+<td>Max alerts dispatched per minute</td>
+</tr>
+<tr>
+<td><code>sysguardd.alert.webhookSecretName</code></td>
+<td><code>""</code></td>
+<td>Name of a Kubernetes Secret holding <code>webhook-url</code> key</td>
+</tr>
+<tr>
+<td><code>resources.requests.cpu</code></td>
+<td><code>100m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>resources.limits.cpu</code></td>
+<td><code>500m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>resources.limits.memory</code></td>
+<td><code>512Mi</code></td>
+<td>Memory limit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Custom values file:</strong></p>
+<pre><code class="language-bash">cat &gt; custom-values.yaml &lt;&lt;EOF
+sysguardd:
+  mode: enforce
+  logLevel: debug
+resources:
+  requests:
+    memory: 256Mi
+  limits:
+    memory: 1Gi
+EOF
+
+helm install sysguardd ./helm -f custom-values.yaml
+</code></pre>
+<h4 id="enabling-real-time-alerting-via-helm">Enabling Real-Time Alerting via Helm<a class="headerlink" href="#enabling-real-time-alerting-via-helm" title="Permanent link">&para;</a></h4>
+<p><strong>Option A — inline URL (dev/test only, avoid in production):</strong></p>
+<pre><code class="language-bash">helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.webhookUrl=http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --set sysguardd.alert.minSeverity=critical
+</code></pre>
+<p><strong>Option B — Secret-driven URL (recommended for production):</strong></p>
+<p>Store the webhook URL in a Kubernetes Secret so it is never embedded in Helm values or pod specs:</p>
+<pre><code class="language-bash"># Create the secret
+kubectl create secret generic sysguardd-alerts \
+  --namespace kube-system \
+  --from-literal=webhook-url=http://hooks.slack.com/services/XXX/YYY/ZZZ
+</code></pre>
+<pre><code class="language-bash"># Reference it in Helm
+helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.webhookSecretName=sysguardd-alerts \
+  --set sysguardd.alert.minSeverity=critical \
+  --set sysguardd.alert.dedupeWindowSec=120 \
+  --set sysguardd.alert.rateLimitPerMinute=30
+</code></pre>
+<p>The Helm chart mounts the Secret as an environment variable <code>SYSGUARDD_ALERT_WEBHOOK_URL</code> and the DaemonSet template passes it to the daemon via <code>--alert-webhook-url</code>.</p>
+<p><strong>Tuning for noisy clusters (monitor mode):</strong></p>
+<pre><code class="language-bash">helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.alert.enabled=true \
+  --set sysguardd.alert.minSeverity=warning \
+  --set sysguardd.alert.dedupeWindowSec=300 \
+  --set sysguardd.alert.rateLimitPerMinute=10
+</code></pre>
+<h4 id="node-labelling-and-policy-versioning">Node Labelling and Policy Versioning<a class="headerlink" href="#node-labelling-and-policy-versioning" title="Permanent link">&para;</a></h4>
+<p>Tag every audit log line with a node identifier and policy version for easy SIEM correlation:</p>
+<pre><code class="language-bash">helm install sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.policyVersion=v1.2.3
+</code></pre>
+<p><code>node_id</code> is automatically set to each pod's <code>spec.nodeName</code> via the Downward API — no manual override is needed in Kubernetes.</p>
+<h4 id="verify-helm-deployment">Verify Helm Deployment<a class="headerlink" href="#verify-helm-deployment" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash"># Check DaemonSet status
+kubectl get daemonset -n kube-system sysguardd
+
+# Watch pod rollout
+kubectl rollout status daemonset/sysguardd -n kube-system --timeout=5m
+
+# View pod logs
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd --tail=50 -f
+
+# Check service
+kubectl get svc -n kube-system -l app.kubernetes.io/name=sysguardd
+</code></pre>
+<h4 id="uninstall">Uninstall<a class="headerlink" href="#uninstall" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">helm uninstall sysguardd -n kube-system
+</code></pre>
+<hr />
+<h3 id="method-2-kustomize">Method 2: Kustomize<a class="headerlink" href="#method-2-kustomize" title="Permanent link">&para;</a></h3>
+<p>Kustomize allows environment-specific overlays without templating.</p>
+<h4 id="deploy-with-kustomize">Deploy with Kustomize<a class="headerlink" href="#deploy-with-kustomize" title="Permanent link">&para;</a></h4>
+<p><strong>Base deployment:</strong></p>
+<pre><code class="language-bash">kubectl apply -k k8s/
+</code></pre>
+<p><strong>Create environment overlay (monitor mode):</strong></p>
+<pre><code class="language-bash">mkdir -p k8s/overlays/monitor
+cat &gt; k8s/overlays/monitor/kustomization.yaml &lt;&lt;EOF
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+bases:
+- ../../
+
+patches:
+- target:
+    kind: DaemonSet
+    name: sysguardd
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/args/2
+      value: monitor
+EOF
+
+kubectl apply -k k8s/overlays/monitor
+</code></pre>
+<p><strong>Create enforce overlay:</strong></p>
+<pre><code class="language-bash">mkdir -p k8s/overlays/enforce
+cat &gt; k8s/overlays/enforce/kustomization.yaml &lt;&lt;EOF
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+bases:
+- ../../
+
+patches:
+- target:
+    kind: DaemonSet
+    name: sysguardd
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/args/2
+      value: enforce
+EOF
+
+kubectl apply -k k8s/overlays/enforce
+</code></pre>
+<h4 id="verify-kustomize-deployment">Verify Kustomize Deployment<a class="headerlink" href="#verify-kustomize-deployment" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">kubectl get all -n kube-system -l app=sysguardd
+kubectl describe daemonset sysguardd -n kube-system
+</code></pre>
+<hr />
+<h3 id="method-3-raw-kubectl-manifests">Method 3: Raw kubectl Manifests<a class="headerlink" href="#method-3-raw-kubectl-manifests" title="Permanent link">&para;</a></h3>
+<p>Deploy individual manifest files.</p>
+<pre><code class="language-bash"># 1. Create namespace
+kubectl create namespace kube-system --dry-run=client -o yaml | kubectl apply -f -
+
+# 2. Deploy RBAC
+kubectl apply -f k8s/rbac.yaml
+
+# 3. Deploy ConfigMap (policy)
+kubectl apply -f k8s/configmap.yaml
+
+# 4. Deploy DaemonSet
+kubectl apply -f k8s/daemonset.yaml
+</code></pre>
+<hr />
+<h2 id="testing-workflows">Testing Workflows<a class="headerlink" href="#testing-workflows" title="Permanent link">&para;</a></h2>
+<h3 id="local-testing-kind-kubernetes-in-docker">Local Testing: kind (Kubernetes in Docker)<a class="headerlink" href="#local-testing-kind-kubernetes-in-docker" title="Permanent link">&para;</a></h3>
+<p><strong>Create a test cluster:</strong></p>
+<pre><code class="language-bash">kind create cluster --name sysguardd-test
+</code></pre>
+<p><strong>Build and load image:</strong></p>
+<pre><code class="language-bash"># Build locally
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+# (Assuming a Dockerfile exists - see Dockerfile section below)
+docker build -t sysguardd:latest .
+
+# Load into kind
+kind load docker-image sysguardd:latest --name sysguardd-test
+</code></pre>
+<p><strong>Deploy:</strong></p>
+<pre><code class="language-bash">kubectl cluster-info --context kind-sysguardd-test
+helm install sysguardd ./helm \
+  --context kind-sysguardd-test \
+  --namespace kube-system
+</code></pre>
+<p><strong>Inspect logs:</strong></p>
+<pre><code class="language-bash">kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd \
+  --context kind-sysguardd-test --tail=50 -f
+</code></pre>
+<p><strong>Cleanup:</strong></p>
+<pre><code class="language-bash">kind delete cluster --name sysguardd-test
+</code></pre>
+<hr />
+<h3 id="multi-node-testing-minikube">Multi-Node Testing: minikube<a class="headerlink" href="#multi-node-testing-minikube" title="Permanent link">&para;</a></h3>
+<p><strong>Start multi-node cluster:</strong></p>
+<pre><code class="language-bash">minikube start --nodes 3 -p sysguardd-test
+</code></pre>
+<p><strong>Verify nodes:</strong></p>
+<pre><code class="language-bash">kubectl get nodes
+</code></pre>
+<p><strong>Deploy SysGuardd:</strong></p>
+<pre><code class="language-bash">helm install sysguardd ./helm --namespace kube-system
+</code></pre>
+<p><strong>Check DaemonSet spread:</strong></p>
+<pre><code class="language-bash">kubectl get pods -n kube-system -o wide | grep sysguardd
+</code></pre>
+<p>Expected: One pod per node.</p>
+<hr />
+<h3 id="policy-testing-monitor-enforce-workflow">Policy Testing: Monitor → Enforce Workflow<a class="headerlink" href="#policy-testing-monitor-enforce-workflow" title="Permanent link">&para;</a></h3>
+<h4 id="1-deploy-in-monitor-mode-default">1. Deploy in Monitor Mode (Default)<a class="headerlink" href="#1-deploy-in-monitor-mode-default" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">helm install sysguardd ./helm --namespace kube-system --set sysguardd.mode=monitor
+</code></pre>
+<h4 id="2-generate-traffic-and-observe-logs">2. Generate Traffic and Observe Logs<a class="headerlink" href="#2-generate-traffic-and-observe-logs" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash"># Create a test pod that violates policy
+kubectl run test-shell --image=alpine:latest --rm -it -- /bin/sh
+
+# In another terminal, watch logs for policy violations
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd \
+  --tail=0 -f | grep '&quot;decision&quot;:&quot;deny&quot;'
+
+# Pretty-print deny events (requires jq)
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd \
+  --tail=100 | grep '&quot;decision&quot;:&quot;deny&quot;' | jq '{event_id,severity,node_id,exe,reason}'
+</code></pre>
+<h4 id="3-review-deny-events">3. Review Deny Events<a class="headerlink" href="#3-review-deny-events" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash"># Get all events
+kubectl get events -n kube-system --sort-by='.lastTimestamp'
+
+# Watch for enforcement events
+kubectl get events -n kube-system -w | grep sysguardd
+</code></pre>
+<h4 id="4-update-policy-if-needed">4. Update Policy if Needed<a class="headerlink" href="#4-update-policy-if-needed" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash"># Edit ConfigMap
+kubectl edit cm sysguardd-policy -n kube-system
+
+# Pods will automatically reload policy
+</code></pre>
+<h4 id="5-switch-to-enforce-mode">5. Switch to Enforce Mode<a class="headerlink" href="#5-switch-to-enforce-mode" title="Permanent link">&para;</a></h4>
+<p>After validating the policy is correct:</p>
+<pre><code class="language-bash">helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.mode=enforce
+</code></pre>
+<h4 id="6-verify-enforcement">6. Verify Enforcement<a class="headerlink" href="#6-verify-enforcement" title="Permanent link">&para;</a></h4>
+<p>Test pods that violate policy should now be terminated:</p>
+<pre><code class="language-bash"># Try to execute a denied command - expect SIGKILL
+kubectl run test-violation --image=alpine:latest -- /bin/nc localhost 1234
+kubectl get pods -l run=test-violation  # Pod should show CrashLoopBackOff or Terminated
+</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="pod-not-starting">Pod Not Starting<a class="headerlink" href="#pod-not-starting" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Check pod status
+kubectl describe pod &lt;pod-name&gt; -n kube-system
+
+# View init logs
+kubectl logs &lt;pod-name&gt; -c sysguardd -n kube-system --previous
+</code></pre>
+<h3 id="permission-denied-rbac-issues">Permission Denied / RBAC Issues<a class="headerlink" href="#permission-denied-rbac-issues" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Verify ServiceAccount permissions
+kubectl auth can-i read pods --as=system:serviceaccount:kube-system:sysguardd
+kubectl auth can-i read nodes --as=system:serviceaccount:kube-system:sysguardd
+</code></pre>
+<h3 id="policy-not-loading">Policy Not Loading<a class="headerlink" href="#policy-not-loading" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Verify ConfigMap exists and is readable
+kubectl get cm sysguardd-policy -n kube-system
+kubectl describe cm sysguardd-policy -n kube-system
+
+# Check volume mount in pod
+kubectl exec -it &lt;pod-name&gt; -n kube-system -- ls -la /etc/sysguardd/
+</code></pre>
+<h3 id="alerts-not-firing">Alerts Not Firing<a class="headerlink" href="#alerts-not-firing" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Confirm alerting is enabled in the running pod args
+kubectl get pod -n kube-system -l app.kubernetes.io/name=sysguardd -o jsonpath='{.items[0].spec.containers[0].args}'
+# Expected: [..., &quot;--alert-enabled&quot;, &quot;--alert-webhook-url&quot;, &quot;http://...&quot;, ...]
+
+# Check for webhook delivery failures in pod stderr
+kubectl logs -n kube-system -l app.kubernetes.io/name=sysguardd | grep 'alert:'
+# Failure example: alert: failed to connect to webhook host: hooks.slack.com
+
+# Verify the Secret exists and has the correct key
+kubectl get secret sysguardd-alerts -n kube-system -o jsonpath='{.data.webhook-url}' | base64 -d
+
+# Check if alerts are being rate-limited or deduped
+# If the same exe triggers many times, the dedupe window may be suppressing them.
+# Temporarily lower --alert-dedupe-window to 5 for testing:
+helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set sysguardd.alert.dedupeWindowSec=5
+</code></pre>
+<h3 id="high-cpu-memory-usage">High CPU / Memory Usage<a class="headerlink" href="#high-cpu-memory-usage" title="Permanent link">&para;</a></h3>
+<p>Check resource requests/limits in <code>values.yaml</code>:</p>
+<pre><code class="language-bash"># View current limits
+kubectl describe ds sysguardd -n kube-system | grep -A 5 &quot;Limits\|Requests&quot;
+
+# Adjust via Helm
+helm upgrade sysguardd ./helm \
+  --namespace kube-system \
+  --set resources.limits.cpu=1000m \
+  --set resources.limits.memory=1Gi
+</code></pre>
+<hr />
+<h2 id="docker-image-building">Docker Image Building<a class="headerlink" href="#docker-image-building" title="Permanent link">&para;</a></h2>
+<p>Create a <code>Dockerfile</code> in the project root:</p>
+<pre><code class="language-dockerfile"># Build stage
+FROM ubuntu:22.04 as builder
+
+RUN apt-get update &amp;&amp; apt-get install -y \
+    cmake \
+    build-essential \
+    clang \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY . .
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release &amp;&amp; \
+    cmake --build build
+
+# Runtime stage
+FROM ubuntu:22.04
+
+RUN apt-get update &amp;&amp; apt-get install -y \
+    libpthread-stubs0 \
+    &amp;&amp; rm -rf /var/lib/apt/lists/* &amp;&amp; \
+    adduser --system --no-create-home sysguardd
+
+COPY --from=builder /src/build/sysguardd /usr/local/bin/
+COPY policies/default.policy /etc/sysguardd/default.policy
+
+USER sysguardd
+ENTRYPOINT [&quot;/usr/local/bin/sysguardd&quot;]
+CMD [&quot;daemon&quot;, &quot;--mode&quot;, &quot;monitor&quot;, &quot;--policy&quot;, &quot;/etc/sysguardd/default.policy&quot;]
+</code></pre>
+<p>Build and push:</p>
+<pre><code class="language-bash">docker build -t sysguardd:latest .
+docker tag sysguardd:latest sysguardd:v1.0.0
+# docker push &lt;registry&gt;/sysguardd:v1.0.0
+</code></pre>
+<hr />
+<h2 id="next-steps-phase-2">Next Steps (Phase 2)<a class="headerlink" href="#next-steps-phase-2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Multi-tenant policy isolation (namespace-scoped policies)</li>
+<li>[ ] gRPC telemetry export to observability stacks</li>
+<li>[ ] eBPF-based kernel probes for real process execution visibility</li>
+<li>[ ] Prometheus metrics export</li>
+<li>[ ] Integration tests with real container runtime violations</li>
+<li>[ ] Helm chart repository (ChartMuseum or GitHub Releases)</li>
+<li>[ ] ArgoCD/Flux GitOps examples</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      
+    
+  </body>
+</html>

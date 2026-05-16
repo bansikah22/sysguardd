@@ -1,0 +1,1479 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Runtime process enforcement and observability for Linux and Kubernetes">
+      
+      
+      
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/COMPONENTS/">
+      
+      
+        <link rel="prev" href="../ARCHITECTURE/">
+      
+      
+        <link rel="next" href="../CLI/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+    
+    
+      
+        <title>Components - SysGuardd Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sysguardd-component-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SysGuardd Documentation" class="md-header__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SysGuardd Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Components
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SysGuardd Documentation" class="md-nav__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SysGuardd Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cli-interface-includesysguarddclihpp-srcclicpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. CLI Interface (include/sysguardd/cli.hpp, src/cli.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configuration-management-includesysguarddconfighpp-srcconfigcpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Configuration Management (include/sysguardd/config.hpp, src/config.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-event-model-includesysguarddeventhpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Event Model (include/sysguardd/event.hpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-policy-engine-includesysguarddpolicy_enginehpp-srcpolicy_enginecpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Policy Engine (include/sysguardd/policy_engine.hpp, src/policy_engine.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-mitigation-engine-includesysguarddmitigatorhpp-srcmitigatorcpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Mitigation Engine (include/sysguardd/mitigator.hpp, src/mitigator.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-audit-logger-includesysguarddaudit_loggerhpp-srcaudit_loggercpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Audit Logger (include/sysguardd/audit_logger.hpp, src/audit_logger.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6a-alert-dispatcher-includesysguarddalert_dispatcherhpp-srcalert_dispatchercpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      6a. Alert Dispatcher (include/sysguardd/alert_dispatcher.hpp, src/alert_dispatcher.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-service-loop-includesysguarddservicehpp-srcservicecpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Service Loop (include/sysguardd/service.hpp, src/service.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-main-entry-point-srcmaincpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Main Entry Point (src/main.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-through-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Flow Through Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Through Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-process-blocked-by-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Process Blocked by Policy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies-and-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependencies and Ownership
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-test-policy-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Test (policy validation):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1b" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1B
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KUBERNETES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_QUICK_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_PUBLISHING_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Publishing Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install & Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EVENT_INJECTION_TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Injection Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cli-interface-includesysguarddclihpp-srcclicpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. CLI Interface (include/sysguardd/cli.hpp, src/cli.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configuration-management-includesysguarddconfighpp-srcconfigcpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Configuration Management (include/sysguardd/config.hpp, src/config.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-event-model-includesysguarddeventhpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Event Model (include/sysguardd/event.hpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-policy-engine-includesysguarddpolicy_enginehpp-srcpolicy_enginecpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Policy Engine (include/sysguardd/policy_engine.hpp, src/policy_engine.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-mitigation-engine-includesysguarddmitigatorhpp-srcmitigatorcpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Mitigation Engine (include/sysguardd/mitigator.hpp, src/mitigator.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-audit-logger-includesysguarddaudit_loggerhpp-srcaudit_loggercpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Audit Logger (include/sysguardd/audit_logger.hpp, src/audit_logger.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6a-alert-dispatcher-includesysguarddalert_dispatcherhpp-srcalert_dispatchercpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      6a. Alert Dispatcher (include/sysguardd/alert_dispatcher.hpp, src/alert_dispatcher.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-service-loop-includesysguarddservicehpp-srcservicecpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Service Loop (include/sysguardd/service.hpp, src/service.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-main-entry-point-srcmaincpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Main Entry Point (src/main.cpp)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-through-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Flow Through Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Through Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-process-blocked-by-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Process Blocked by Policy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies-and-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependencies and Ownership
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-test-policy-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Test (policy validation):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1b" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1B
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="sysguardd-component-reference">SysGuardd Component Reference<a class="headerlink" href="#sysguardd-component-reference" title="Permanent link">&para;</a></h1>
+<p>This document describes each component in the SysGuardd codebase, its responsibilities, and how they work together.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>SysGuardd is organized into several key components that work together to enforce runtime process policies:</p>
+<pre><code>┌──────────────────────────────────────────────────────────────────┐
+│  User Interface (CLI)                         [cli.hpp/cpp]      │
+├──────────────────────────────────────────────────────────────────┤
+│  Configuration Management                     [config.hpp/cpp]   │
+│  (mode, policy_path, node_id, policy_version, AlertConfig)       │
+├──────────────────────────────────────────────────────────────────┤
+│  Service Loop                                 [service.hpp/cpp]  │
+│                                                                   │
+│  ┌──────────────────┐  ┌──────────────┐  ┌─────────────────┐   │
+│  │ Policy Engine    │  │ Mitigator    │  │ Audit Logger    │   │
+│  │[policy_engine.*] │  │[mitigator.*] │  │[audit_logger.*] │   │
+│  │                  │  │              │  │                 │   │
+│  │ - Deny-list      │  │ - SIGKILL    │  │ - JSON output   │   │
+│  │ - O(1) decisions │  │ - Safety     │  │ - event_id      │   │
+│  │ - Policy loading │  │   guards     │  │ - severity      │   │
+│  └──────────────────┘  └──────────────┘  │ - node_id       │   │
+│                                           │ - policy_version│   │
+│                                           │ - Thread-safe   │   │
+│                                           └─────────────────┘   │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ Alert Dispatcher (optional)  [alert_dispatcher.hpp/cpp]    │  │
+│  │ - Non-blocking background worker thread                    │  │
+│  │ - Bounded queue (max 128), dedupe, token-bucket rate limit │  │
+│  │ - HTTP POST to Slack/Teams-compatible webhook              │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ Event Model                        [event.hpp]             │  │
+│  │ - ProcessEvent: pid, ppid, exe, args, timestamp            │  │
+│  │ - Decision: allowed bool + reason string                   │  │
+│  │ - AlertEvent: event_id, severity, node_id, exe, reason     │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="component-details">Component Details<a class="headerlink" href="#component-details" title="Permanent link">&para;</a></h2>
+<h3 id="1-cli-interface-includesysguarddclihpp-srcclicpp">1. CLI Interface (<code>include/sysguardd/cli.hpp</code>, <code>src/cli.cpp</code>)<a class="headerlink" href="#1-cli-interface-includesysguarddclihpp-srcclicpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Provides a Docker daemon-like command-line interface for daemon management, policy operations, and status inspection.</p>
+<p><strong>Responsibilities:</strong>
+- Parse command-line arguments into structured commands
+- Route commands to appropriate handlers
+- Provide user-friendly help and version information
+- Format output (human-readable and JSON)</p>
+<p><strong>Key Functions:</strong>
+- <code>parse_cli_args()</code> - Parse <code>int argc, char** argv</code> into <code>CLIContext</code>
+- <code>execute_command()</code> - Route and execute command handlers
+- <code>show_help()</code> - Display context-sensitive help
+- <code>show_version()</code> - Display version info</p>
+<p><strong>Available Commands:</strong>
+- <code>daemon</code> - Start enforcement daemon
+- <code>status</code> - Show daemon status (with <code>--json</code>)
+- <code>config</code> - View configuration (with <code>--json</code>)
+- <code>version</code> - Show version
+- <code>mode</code> - Switch between monitor/enforce modes
+- <code>policy</code> - Policy management (validate, load, current)
+- <code>logs</code> - View or stream audit logs
+- <code>help</code> - Show help for any command</p>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="language-cpp">CLIContext ctx = parse_cli_args(argc, argv);
+return execute_command(ctx);
+</code></pre>
+<hr />
+<h3 id="2-configuration-management-includesysguarddconfighpp-srcconfigcpp">2. Configuration Management (<code>include/sysguardd/config.hpp</code>, <code>src/config.cpp</code>)<a class="headerlink" href="#2-configuration-management-includesysguarddconfighpp-srcconfigcpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Handle daemon configuration parsing from command-line arguments and configuration sources.</p>
+<p><strong>Responsibilities:</strong>
+- Parse CLI arguments (--mode, --policy)
+- Validate configuration parameters
+- Store configuration state</p>
+<p><strong>Key Structures:</strong></p>
+<pre><code class="language-cpp">enum class Mode {
+  monitor,  // Log violations without blocking
+  enforce   // Actively block violations
+};
+
+struct Config {
+  Mode mode{Mode::monitor};
+  std::string policy_path{&quot;./policies/default.policy&quot;};
+};
+</code></pre>
+<p><strong>Key Functions:</strong>
+- <code>parse_config()</code> - Parse CLI args into Config struct
+- <code>parse_mode()</code> - Convert string to Mode enum</p>
+<p><strong>Design Notes:</strong>
+- Configuration is immutable after parsing
+- Defaults favor safety (monitor mode, local policy)
+- Future: Support config files and environment variables</p>
+<hr />
+<h3 id="3-event-model-includesysguarddeventhpp">3. Event Model (<code>include/sysguardd/event.hpp</code>)<a class="headerlink" href="#3-event-model-includesysguarddeventhpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Define the data structures for process events and enforcement decisions.</p>
+<p><strong>Key Structures:</strong></p>
+<pre><code class="language-cpp">struct ProcessEvent {
+  int pid;
+  int ppid;
+  std::string exe;
+  std::vector&lt;std::string&gt; args;
+  std::chrono::system_clock::time_point timestamp;
+};
+
+struct Decision {
+  bool allowed;
+  std::string reason;
+};
+</code></pre>
+<p><strong>Responsibilities:</strong>
+- Define event format for kernel-to-userspace communication
+- Provide decision structure for policy outcomes
+- Model the minimal metadata needed for policy evaluation</p>
+<p><strong>Design Notes:</strong>
+- Phase 1 uses text format (stdin): <code>PID PPID EXE [ARG ...]</code>
+- Phase 1B will add eBPF kernel probes
+- Structure supports future extension (parent context, capabilities, etc.)</p>
+<hr />
+<h3 id="4-policy-engine-includesysguarddpolicy_enginehpp-srcpolicy_enginecpp">4. Policy Engine (<code>include/sysguardd/policy_engine.hpp</code>, <code>src/policy_engine.cpp</code>)<a class="headerlink" href="#4-policy-engine-includesysguarddpolicy_enginehpp-srcpolicy_enginecpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Load and evaluate process execution policies deterministically.</p>
+<p><strong>Responsibilities:</strong>
+- Load policy rules from files
+- Evaluate process events against deny-list rules
+- Return allow/deny decisions with reasons
+- Provide O(1)-style policy lookups</p>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="language-cpp">class PolicyEngine {
+public:
+  static PolicyEngine load_from_file(const std::string&amp; path);
+  Decision evaluate(const ProcessEvent&amp; event) const;
+};
+</code></pre>
+<p><strong>Policy Model (Phase 1):</strong>
+- Deny-list of executable paths (one per line)
+- Default: allow all (monitor mode)
+- Future: allow-list, behavioral rules, parent constraints</p>
+<p><strong>Example Policy File:</strong></p>
+<pre><code>/usr/bin/nc
+/usr/bin/ncat
+/usr/bin/socat
+/bin/bash -c
+</code></pre>
+<p><strong>Design Notes:</strong>
+- File-based policy for Phase 1
+- O(1) deny-list lookup using <code>std::unordered_set</code>
+- Rejects non-absolute paths for safety
+- Thread-safe for concurrent policy reads</p>
+<hr />
+<h3 id="5-mitigation-engine-includesysguarddmitigatorhpp-srcmitigatorcpp">5. Mitigation Engine (<code>include/sysguardd/mitigator.hpp</code>, <code>src/mitigator.cpp</code>)<a class="headerlink" href="#5-mitigation-engine-includesysguarddmitigatorhpp-srcmitigatorcpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Enforce deny decisions by terminating unauthorized processes.</p>
+<p><strong>Responsibilities:</strong>
+- Send SIGKILL to blocked processes
+- Guard against dangerous PIDs (1, self)
+- Handle mitigation failures gracefully
+- Provide error reporting</p>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="language-cpp">class Mitigator {
+public:
+  void kill_process(int pid);
+};
+</code></pre>
+<p><strong>Safety Guards:</strong>
+- Never kill PID 1 (init/systemd)
+- Never kill own process (avoid daemon suicide)
+- Throw exceptions on failure for audit trail</p>
+<p><strong>Design Notes:</strong>
+- SIGKILL ensures no catching/masking by target
+- Single action in Phase 1 (extensible for future actions)
+- Synchronous operation (could become async in Phase 2)</p>
+<hr />
+<h3 id="6-audit-logger-includesysguarddaudit_loggerhpp-srcaudit_loggercpp">6. Audit Logger (<code>include/sysguardd/audit_logger.hpp</code>, <code>src/audit_logger.cpp</code>)<a class="headerlink" href="#6-audit-logger-includesysguarddaudit_loggerhpp-srcaudit_loggercpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Emit structured audit logs for observability and incident response.</p>
+<p><strong>Responsibilities:</strong>
+- Format events as JSON for SIEM integration
+- Thread-safe logging with mutex protection
+- Provide both human-readable and machine-parseable output
+- Escape special characters for JSON safety</p>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="language-cpp">class AuditLogger {
+public:
+  AuditLogger(std::ostream&amp; stream, std::string node_id, std::string policy_version);
+  void log(
+    const ProcessEvent&amp; event,
+    const Decision&amp; decision,
+    bool enforced,
+    const std::string&amp; action,
+    const std::string&amp; action_error,
+    const std::string&amp; event_id,
+    const std::string&amp; severity
+  );
+};
+</code></pre>
+<p><strong>Output Format (JSON):</strong></p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;2026-05-16T08:12:43Z&quot;,
+  &quot;event_id&quot;: &quot;0000000000000000&quot;,
+  &quot;severity&quot;: &quot;critical&quot;,
+  &quot;node_id&quot;: &quot;k8s-node-01&quot;,
+  &quot;policy_version&quot;: &quot;v1.2.3&quot;,
+  &quot;pid&quot;: 1234,
+  &quot;ppid&quot;: 1,
+  &quot;exe&quot;: &quot;/bin/bash&quot;,
+  &quot;decision&quot;: &quot;deny&quot;,
+  &quot;reason&quot;: &quot;deny_executable_match&quot;,
+  &quot;enforced&quot;: true,
+  &quot;action&quot;: &quot;sigkill&quot;,
+  &quot;action_error&quot;: &quot;&quot;
+}
+</code></pre>
+<p><strong>Severity Mapping:</strong>
+| Mode | Decision | Enforce failure | Severity |
+|---|---|---|---|
+| any | allow | — | <code>info</code> |
+| monitor | deny | — | <code>warning</code> |
+| enforce | deny | no | <code>critical</code> |
+| enforce | deny | yes | <code>critical</code> |</p>
+<p><strong>Design Notes:</strong>
+- One event per line (suitable for log aggregation)
+- Timestamps in ISO8601 format
+- <code>event_id</code> is a zero-padded 64-bit hex counter, monotonic per daemon run
+- <code>node_id</code> defaults to system hostname; overridable via <code>--node-id</code>
+- <code>policy_version</code> is an optional tag set via <code>--policy-version</code>
+- Thread-safe via mutex (supports future async logging)
+- All string fields are JSON-escaped to prevent injection (CWE-116)</p>
+<hr />
+<h3 id="6a-alert-dispatcher-includesysguarddalert_dispatcherhpp-srcalert_dispatchercpp">6a. Alert Dispatcher (<code>include/sysguardd/alert_dispatcher.hpp</code>, <code>src/alert_dispatcher.cpp</code>)<a class="headerlink" href="#6a-alert-dispatcher-includesysguarddalert_dispatcherhpp-srcalert_dispatchercpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Non-blocking, thread-safe dispatcher that forwards security alert events to a configured webhook endpoint.</p>
+<p><strong>Responsibilities:</strong>
+- Receive alert events from the Service loop without blocking it
+- Apply per-key deduplication to suppress repeated alerts for the same executable
+- Apply token-bucket rate limiting to prevent alert storms
+- Deliver Slack/Teams-compatible JSON payloads via HTTP POST
+- Report delivery failures to stderr without crashing the daemon</p>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="language-cpp">class AlertDispatcher {
+public:
+  AlertDispatcher(const AlertConfig&amp; cfg, std::string node_id, std::string policy_version);
+  void dispatch(AlertEvent event);  // non-blocking; queues for background delivery
+};
+</code></pre>
+<p><strong>Webhook Payload Example (Slack/Teams):</strong></p>
+<pre><code class="language-json">{&quot;text&quot;: &quot;*[sysguardd][critical]* Process event on `k8s-node-01`\nexe: `/bin/bash`\npid: 1234\nreason: deny_executable_match\naction: sigkill\nevent_id: 0000000000000000\npolicy_version: v1.2.3&quot;}
+</code></pre>
+<p><strong>Design Notes:</strong>
+- Background worker thread drains a bounded queue (max 128 entries)
+- If queue is full the oldest entry is silently dropped — daemon runtime is never blocked
+- Deduplication key is <code>exe + severity</code>; configurable window via <code>--alert-dedupe-window</code>
+- Token-bucket refills to <code>rate_limit_per_minute</code> every 60 seconds
+- Alerts below <code>min_severity</code> threshold are discarded before queuing
+- Alerts are only created when <code>--alert-enabled</code> is passed; dispatcher is not instantiated otherwise
+- Only <code>http://</code> URLs are supported; TLS support requires a future dependency</p>
+<hr />
+<h3 id="7-service-loop-includesysguarddservicehpp-srcservicecpp">7. Service Loop (<code>include/sysguardd/service.hpp</code>, <code>src/service.cpp</code>)<a class="headerlink" href="#7-service-loop-includesysguarddservicehpp-srcservicecpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Main event processing loop that orchestrates policy evaluation and mitigation.</p>
+<p><strong>Responsibilities:</strong>
+- Read process events from input (stdin in Phase 1)
+- Parse event format (PID PPID EXE [ARG ...])
+- Apply policy engine to events
+- Assign a monotonic <code>event_id</code> and compute <code>severity</code> per event
+- Trigger mitigation for denials
+- Log all decisions to audit stream
+- Dispatch alerts for deny and enforce-failure events
+- Handle errors gracefully</p>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="language-cpp">class Service {
+public:
+  // dispatcher may be nullptr when alerting is disabled
+  Service(Mode mode, PolicyEngine engine, Mitigator&amp; mitigator,
+          AuditLogger&amp; logger, AlertDispatcher* dispatcher = nullptr);
+  void run(std::istream&amp; input);
+};
+</code></pre>
+<p><strong>Event Processing Flow:</strong>
+1. Read line from input (max 4096 bytes for safety)
+2. Parse into ProcessEvent (PID PPID EXE [ARGS...])
+3. Assign monotonic <code>event_id</code> (hex counter)
+4. Evaluate with PolicyEngine → Decision
+5. Compute <code>severity</code> from Decision + Mode
+6. Log decision to AuditLogger (includes <code>event_id</code>, <code>severity</code>, <code>node_id</code>, <code>policy_version</code>)
+7. If denied and enforce mode: call <code>Mitigator::kill_process()</code>
+8. If denied or enforce-failure: queue <code>AlertEvent</code> to AlertDispatcher (non-blocking)
+9. Continue to next event</p>
+<p><strong>Error Handling:</strong>
+- Lines exceeding 4096 bytes are dropped with logging
+- Parse failures are logged as errors
+- Mitigation failures are caught and logged
+- Daemon continues running on any single event error</p>
+<p><strong>Design Notes:</strong>
+- Dependency injection for testability (references to engine, mitigator, logger)
+- AlertDispatcher pointer is nullable — passing <code>nullptr</code> disables alerting with zero overhead
+- <code>event_id</code> is a zero-padded 64-bit hex counter from a <code>std::atomic&lt;uint64_t&gt;</code> — safe for concurrent future use
+- Event loop reads from stdin for Phase 1 baseline
+- Phase 1B will replace stdin with eBPF kernel probe
+- Support for both monitor and enforce modes</p>
+<hr />
+<h3 id="8-main-entry-point-srcmaincpp">8. Main Entry Point (<code>src/main.cpp</code>)<a class="headerlink" href="#8-main-entry-point-srcmaincpp" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Application entry point that ties all components together.</p>
+<p><strong>Responsibilities:</strong>
+- Parse command-line arguments
+- Route to CLI command handlers or legacy daemon mode
+- Construct service with dependency injection
+- Handle exceptions and provide error messages
+- Manage process lifecycle</p>
+<p><strong>Flow:</strong></p>
+<pre><code>main()
+  ├─&gt; parse_cli_args()
+  ├─&gt; Check if legacy daemon mode or new CLI
+  ├─&gt; If CLI: execute_command()
+  └─&gt; If daemon:
+        ├─&gt; parse_config()  (includes AlertConfig, node_id, policy_version)
+        ├─&gt; load policy_engine
+        ├─&gt; create mitigator
+        ├─&gt; create audit_logger(node_id, policy_version)
+        ├─&gt; if alert.enabled: create AlertDispatcher
+        ├─&gt; create Service(mode, engine, mitigator, logger, dispatcher?)
+        └─&gt; run service.run(stdin)
+</code></pre>
+<p><strong>Error Handling:</strong>
+- Catches all exceptions
+- Prints error message to stderr
+- Exits with code 1 on failure, 0 on success</p>
+<hr />
+<h2 id="data-flow-through-components">Data Flow Through Components<a class="headerlink" href="#data-flow-through-components" title="Permanent link">&para;</a></h2>
+<h3 id="example-process-blocked-by-policy">Example: Process Blocked by Policy<a class="headerlink" href="#example-process-blocked-by-policy" title="Permanent link">&para;</a></h3>
+<pre><code>┌──────────────────────┐
+│ Input Event:         │
+│ 1234 1 /bin/bash -i  │
+└────────┬─────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────┐
+│ Service::run()                               │
+│ - Parse event line -&gt; ProcessEvent           │
+│ - Assign event_id: &quot;0000000000000000&quot;        │
+└──────────────┬───────────────────────────────┘
+     │
+     ▼
+┌──────────────────────────────────────────────┐
+│ PolicyEngine::evaluate(ProcessEvent)         │
+│ - /bin/bash found in deny-list               │
+│ - Return: Decision{false, &quot;deny_executable&quot;} │
+└──────────────┬───────────────────────────────┘
+     │ (denied)
+     ▼
+┌──────────────────────────────────────────────┐
+│ Service::run() (continue)                    │
+│ - compute_severity -&gt; &quot;critical&quot; (enforce)   │
+│ - mode == enforce: Mitigator::kill_process() │
+└──────┬───────────────────────┬───────────────┘
+  │                       │
+  ▼                       ▼
+┌──────────────────┐  ┌──────────────────────────────────────────┐
+│ AuditLogger::log │  │ AlertDispatcher::dispatch(AlertEvent)    │
+│ - JSON to stdout │  │ - Queue to background worker (returns    │
+│ - event_id       │  │   immediately, never blocks)             │
+│ - severity       │  │ - Worker: dedupe check -&gt; rate-limit     │
+│ - node_id        │  │   check -&gt; HTTP POST to webhook          │
+│ - policy_version │  └──────────────────────────────────────────┘
+└──────────────────┘
+</code></pre>
+<hr />
+<h2 id="dependencies-and-ownership">Dependencies and Ownership<a class="headerlink" href="#dependencies-and-ownership" title="Permanent link">&para;</a></h2>
+<p><strong>Ownership Model:</strong>
+- <code>Service</code> owns <code>PolicyEngine</code> (move semantics)
+- <code>Service</code> holds references to <code>Mitigator</code> and <code>AuditLogger</code> (non-owning)
+- <code>main()</code> manages all lifetimes</p>
+<p><strong>Why References for Mitigator and Logger?</strong>
+- Non-copyable types (mutex in AuditLogger)
+- Allows dependency injection for testing
+- Clear separation: Service doesn't manage their lifecycle</p>
+<hr />
+<h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>policy_engine_test</strong>: Load policies, evaluate events</li>
+<li><strong>Future</strong>: service_test, mitigator_test, logger_test</li>
+</ul>
+<h3 id="integration-testing">Integration Testing<a class="headerlink" href="#integration-testing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Event input via stdin</li>
+<li>Policy enforcement verification</li>
+<li>Audit log format validation</li>
+</ul>
+<h3 id="example-test-policy-validation">Example Test (policy validation):<a class="headerlink" href="#example-test-policy-validation" title="Permanent link">&para;</a></h3>
+<pre><code class="language-cpp">TEST(PolicyEngine, DenyListEvaluation) {
+  auto engine = PolicyEngine::load_from_file(&quot;./policies/default.policy&quot;);
+  ProcessEvent event{1234, 1, &quot;/usr/bin/nc&quot;, {}, {}};
+  Decision decision = engine.evaluate(event);
+  EXPECT_FALSE(decision.allowed);
+}
+</code></pre>
+<hr />
+<h2 id="future-enhancements">Future Enhancements<a class="headerlink" href="#future-enhancements" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1b">Phase 1B<a class="headerlink" href="#phase-1b" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Daemon fork/background mode</li>
+<li>Policy hot-reload without restart</li>
+<li>Log archival and streaming</li>
+</ul>
+<h3 id="phase-2">Phase 2<a class="headerlink" href="#phase-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>eBPF kernel probes for real-time execution</li>
+<li>gRPC telemetry endpoint</li>
+<li>Allow-list mode</li>
+<li>Behavioral anomaly detection</li>
+</ul>
+<h3 id="phase-3">Phase 3<a class="headerlink" href="#phase-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Trust Gradient Mode</li>
+<li>Multi-tenant isolation</li>
+<li>Policy versioning and rollback</li>
+</ul>
+<hr />
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../CLI/">CLI.md</a> - Command-line interface reference</li>
+<li><a href="../ARCHITECTURE/">ARCHITECTURE.md</a> - High-level system design</li>
+<li><a href="../OPERATIONS/">OPERATIONS.md</a> - Operational procedures</li>
+<li><a href="../ROADMAP/">ROADMAP.md</a> - Feature roadmap</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      
+    
+  </body>
+</html>

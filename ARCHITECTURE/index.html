@@ -1,0 +1,1066 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Runtime process enforcement and observability for Linux and Kubernetes">
+      
+      
+      
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/ARCHITECTURE/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../COMPONENTS/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+    
+    
+      
+        <title>Architecture - SysGuardd Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sysguardd-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SysGuardd Documentation" class="md-header__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SysGuardd Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SysGuardd Documentation" class="md-nav__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SysGuardd Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Diagram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-Level Data Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-kernel-probe-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Kernel Probe Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Transport Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-policy-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Policy Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mitigation-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Mitigation Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-telemetry-and-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Telemetry and Integrations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-alert-dispatcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Alert Dispatcher
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trust Boundaries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes-and-safety-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure Modes and Safety Defaults
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-topologies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Topologies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Topologies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linux-host-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linux Host Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-node-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Node Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMPONENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KUBERNETES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_QUICK_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_PUBLISHING_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Publishing Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install & Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EVENT_INJECTION_TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Injection Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Diagram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-Level Data Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-kernel-probe-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Kernel Probe Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Transport Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-policy-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Policy Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mitigation-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Mitigation Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-telemetry-and-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Telemetry and Integrations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-alert-dispatcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Alert Dispatcher
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trust Boundaries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes-and-safety-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure Modes and Safety Defaults
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-topologies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Topologies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Topologies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linux-host-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linux Host Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-node-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Node Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="sysguardd-architecture">SysGuardd Architecture<a class="headerlink" href="#sysguardd-architecture" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>SysGuardd is a runtime enforcement daemon for Linux hosts and Kubernetes nodes.
+It combines kernel-level event capture with deterministic policy decisions and active mitigation.</p>
+<p>Core objective:
+- Observe process execution attempts in near real time.
+- Decide if execution is allowed using explicit policy.
+- Stop unauthorized binaries before they can run.</p>
+<h2 id="system-diagram">System Diagram<a class="headerlink" href="#system-diagram" title="Permanent link">&para;</a></h2>
+<pre><code class="language-mermaid">flowchart LR
+    A[Process Exec Attempt] --&gt; B[eBPF Probe Layer]
+    B --&gt; C[Lockless Ring Buffer]
+    C --&gt; D[User-Space Event Ingestion]
+    D --&gt; E[Policy Engine]
+    E --&gt;|allow - severity:info| F[Audit Logger JSON Output]
+    E --&gt;|deny| G[Mitigation Engine SIGKILL]
+    G --&gt; F
+    F --&gt; H[SIEM or Log Pipeline]
+    E --&gt;|deny - severity:warning/critical| I[Alert Dispatcher]
+    G --&gt;|enforce_failure - severity:critical| I
+    I --&gt;|dedupe + rate-limit| J[Webhook Slack/Teams]
+</code></pre>
+<h2 id="high-level-data-flow">High-Level Data Flow<a class="headerlink" href="#high-level-data-flow" title="Permanent link">&para;</a></h2>
+<ol>
+<li>A process launch event (for example <code>execve</code>) is intercepted through eBPF.</li>
+<li>Event metadata is emitted to user space through a lockless ring buffer.</li>
+<li>A monotonic <code>event_id</code> is assigned and <code>severity</code> is computed for the event.</li>
+<li>A policy engine evaluates the executable and context against active rules.</li>
+<li>If unauthorized and in enforce mode, SysGuardd sends a termination signal (<code>SIGKILL</code>).</li>
+<li>Every event is logged as a structured JSON audit record including <code>event_id</code>, <code>severity</code>, <code>node_id</code>, and <code>policy_version</code>.</li>
+<li>Deny and enforce-failure events are non-blocking queued to the Alert Dispatcher.</li>
+<li>The Alert Dispatcher applies deduplication and rate limiting before forwarding to a webhook endpoint.</li>
+</ol>
+<h2 id="main-components">Main Components<a class="headerlink" href="#main-components" title="Permanent link">&para;</a></h2>
+<h3 id="1-kernel-probe-layer">1) Kernel Probe Layer<a class="headerlink" href="#1-kernel-probe-layer" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Attach eBPF programs at process execution boundaries.
+- Capture minimal, high-value metadata needed for policy checks.</p>
+<p>Captured fields (target set):
+- PID
+- PPID
+- Executable path
+- Command arguments (truncated by safe limits)
+- Timestamp</p>
+<p>Design considerations:
+- Keep probe logic small and verifiable.
+- Avoid expensive operations inside kernel space.</p>
+<h3 id="2-transport-layer">2) Transport Layer<a class="headerlink" href="#2-transport-layer" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Move event records from kernel to user space with low overhead.</p>
+<p>Mechanism:
+- Memory-mapped lockless ring buffer.</p>
+<p>Design considerations:
+- Preserve ordering where possible.
+- Handle backpressure with bounded drops and metrics.</p>
+<h3 id="3-policy-engine">3) Policy Engine<a class="headerlink" href="#3-policy-engine" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Evaluate process events against enforcement policy.
+- Return allow or deny decisions deterministically.</p>
+<p>Policy model (initial):
+- Explicit deny list for executable paths and patterns.
+- Optional parent-process constraints.
+- Default action defined per deployment mode.</p>
+<p>Performance target:
+- O(1)-style lookups for common policy checks.</p>
+<h3 id="4-mitigation-engine">4) Mitigation Engine<a class="headerlink" href="#4-mitigation-engine" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Apply enforcement action when a deny decision is returned.</p>
+<p>Action model (initial):
+- Send <code>SIGKILL</code> to blocked process as primary kill path.
+- Emit a mandatory audit event for every mitigation action.</p>
+<h3 id="5-telemetry-and-integrations">5) Telemetry and Integrations<a class="headerlink" href="#5-telemetry-and-integrations" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Publish normalized events for observability and incident response.</p>
+<p>Output targets:
+- Local JSON logs (structured, one event per line)
+- gRPC event stream for SIEM or cluster control-plane integrations (planned)</p>
+<p>Normalized audit event fields:
+- <code>event_id</code> — monotonic hex counter, unique per daemon run; correlates log lines with alerts
+- <code>severity</code> — <code>info</code> (allow), <code>warning</code> (deny in monitor mode), <code>critical</code> (deny in enforce mode or mitigation failure)
+- <code>node_id</code> — host identity; defaults to system hostname, overridable via <code>--node-id</code> or Kubernetes Downward API
+- <code>policy_version</code> — optional tag for tracing which policy version produced the decision</p>
+<h3 id="6-alert-dispatcher">6) Alert Dispatcher<a class="headerlink" href="#6-alert-dispatcher" title="Permanent link">&para;</a></h3>
+<p>Responsibilities:
+- Deliver security alert events to external notification endpoints in real time.
+- Protect the event loop from any blocking I/O.</p>
+<p>Design:
+- Runs on a dedicated background worker thread.
+- Receives events via a bounded in-process queue (max 128 entries); oldest entry dropped on overflow.
+- Applies per-key deduplication (<code>exe + severity</code>) within a configurable window to suppress repeated alerts.
+- Applies token-bucket rate limiting (configurable per-minute cap) to prevent alert storms.
+- Posts Slack/Teams-compatible JSON payloads via plain HTTP POST.
+- Delivery failures are logged to stderr; the daemon runtime is never interrupted.
+- Instantiated only when <code>--alert-enabled</code> is passed; zero overhead when disabled.</p>
+<h2 id="trust-boundaries">Trust Boundaries<a class="headerlink" href="#trust-boundaries" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Kernel boundary: untrusted process behavior, trusted verified eBPF program.</li>
+<li>User-space daemon boundary: trusted policy and mitigation logic.</li>
+<li>External integrations boundary: authenticated transport and least-privilege credentials.</li>
+</ul>
+<h2 id="failure-modes-and-safety-defaults">Failure Modes and Safety Defaults<a class="headerlink" href="#failure-modes-and-safety-defaults" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Policy service unavailable: fail closed for strict mode, fail open for monitor mode.</li>
+<li>Ring buffer overflow: count drops, expose metrics, and alert.</li>
+<li>Mitigation failure: logged as <code>action_error</code>; severity escalated to <code>critical</code>; alert dispatched if enabled.</li>
+<li>Webhook delivery failure: logged to stderr; daemon continues without interruption.</li>
+<li>Alert queue full: oldest queued alert dropped silently; event loop never blocked.</li>
+<li>Alert rate limit exceeded: excess alerts dropped; resets after one minute.</li>
+</ul>
+<h2 id="deployment-topologies">Deployment Topologies<a class="headerlink" href="#deployment-topologies" title="Permanent link">&para;</a></h2>
+<h3 id="linux-host-mode">Linux Host Mode<a class="headerlink" href="#linux-host-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li>One SysGuardd daemon per host.</li>
+<li>Local policy file or remote policy endpoint.</li>
+</ul>
+<h3 id="kubernetes-node-mode">Kubernetes Node Mode<a class="headerlink" href="#kubernetes-node-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li>DaemonSet deployment per node.</li>
+<li>Node-level visibility for workloads running on that node.</li>
+<li>Cluster-level telemetry aggregation.</li>
+</ul>
+<h2 id="security-notes">Security Notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Run with minimum privileges required for eBPF loading and signaling.</li>
+<li>Sign and verify policy bundles where possible.</li>
+<li>Protect telemetry channels with TLS/mTLS.</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements<a class="headerlink" href="#future-enhancements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Policy-as-code with versioned bundles.</li>
+<li>Allow-list mode for high-trust environments.</li>
+<li>Behavioral heuristics layered on deterministic policies.</li>
+<li>Monitoring API (<code>/health</code>, <code>/status</code>, <code>/events</code>, <code>/stats</code>) with token authentication.</li>
+<li>Read-only web dashboard for live event feed and blocked-executable trends.</li>
+<li>HTTPS webhook support for the Alert Dispatcher.</li>
+<li>gRPC telemetry stream for SIEM integration.</li>
+<li>eBPF CO-RE portability optimization.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      
+    
+  </body>
+</html>

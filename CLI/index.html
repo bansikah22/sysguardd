@@ -1,0 +1,1641 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Runtime process enforcement and observability for Linux and Kubernetes">
+      
+      
+      
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/CLI/">
+      
+      
+        <link rel="prev" href="../COMPONENTS/">
+      
+      
+        <link rel="next" href="../OPERATIONS/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+    
+    
+      
+        <title>CLI - SysGuardd Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sysguardd-command-line-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SysGuardd Documentation" class="md-header__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SysGuardd Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CLI
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SysGuardd Documentation" class="md-nav__button md-logo" aria-label="SysGuardd Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SysGuardd Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bansikah22/sysguardd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bansikah22/sysguardd
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMPONENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Components
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Commands
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-start-the-daemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      daemon - Start the Daemon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-check-daemon-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      status - Check Daemon Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-view-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      config - View Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-show-version-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      version - Show Version Information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-switch-enforcement-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      mode - Switch Enforcement Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-manage-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy - Manage Policies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="policy - Manage Policies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-validate-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy validate &lt;file&gt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-load-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy load &lt;file&gt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy current
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logs-view-audit-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      logs - View Audit Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help-get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      help - Get Help
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-usage-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Usage Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Usage Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Troubleshooting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      With systemd
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-container-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Container Orchestration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase Timeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1 (Current)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1b" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1B
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2+
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command not found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission denied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-shows-not-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status shows "not running"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KUBERNETES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_QUICK_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HELM_PUBLISHING_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm Publishing Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install & Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EVENT_INJECTION_TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Injection Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Commands
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-start-the-daemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      daemon - Start the Daemon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-check-daemon-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      status - Check Daemon Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-view-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      config - View Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-show-version-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      version - Show Version Information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-switch-enforcement-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      mode - Switch Enforcement Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-manage-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy - Manage Policies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="policy - Manage Policies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-validate-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy validate &lt;file&gt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-load-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy load &lt;file&gt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      policy current
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logs-view-audit-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      logs - View Audit Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help-get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      help - Get Help
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-usage-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Usage Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Usage Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Troubleshooting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Policy Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      With systemd
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-container-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Container Orchestration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase Timeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1 (Current)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1b" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1B
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2+
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command not found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission denied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-shows-not-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status shows "not running"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="sysguardd-command-line-interface">SysGuardd Command-Line Interface<a class="headerlink" href="#sysguardd-command-line-interface" title="Permanent link">&para;</a></h1>
+<p>SysGuardd provides a <strong>Docker daemon-like CLI interface</strong> with familiar patterns for managing the enforcement daemon, policies, and operational modes.</p>
+<h2 id="command-overview">Command Overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h2>
+<pre><code>sysguardd &lt;command&gt; [options]
+</code></pre>
+<h3 id="available-commands">Available Commands<a class="headerlink" href="#available-commands" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>daemon</code> - Start the SysGuardd enforcement daemon</li>
+<li><code>status</code> - Show daemon status</li>
+<li><code>logs</code> - View or stream audit logs  </li>
+<li><code>policy</code> - Manage enforcement policies</li>
+<li><code>mode</code> - Switch enforcement mode (monitor/enforce)</li>
+<li><code>config</code> - View current configuration</li>
+<li><code>version</code> - Show version information</li>
+<li><code>help</code> - Show help for commands</li>
+</ul>
+<h2 id="command-reference">Command Reference<a class="headerlink" href="#command-reference" title="Permanent link">&para;</a></h2>
+<h3 id="daemon-start-the-daemon">daemon - Start the Daemon<a class="headerlink" href="#daemon-start-the-daemon" title="Permanent link">&para;</a></h3>
+<p>Start the SysGuardd enforcement daemon with specified mode and policy.</p>
+<pre><code class="language-bash">sysguardd daemon [options]
+</code></pre>
+<p><strong>Options:</strong>
+- <code>--background, -b</code> - Run in background (daemon mode)
+- <code>--mode [monitor|enforce]</code> - Set enforcement mode (default: monitor)
+- <code>--policy &lt;file&gt;</code> - Path to policy file (default: ./policies/default.policy)
+- <code>--node-id &lt;id&gt;</code> - Override node identifier emitted in audit logs (default: system hostname)
+- <code>--policy-version &lt;ver&gt;</code> - Tag emitted in audit logs for policy traceability
+- <code>--alert-enabled</code> - Enable the real-time webhook alerting dispatcher
+- <code>--alert-webhook-url &lt;url&gt;</code> - HTTP webhook URL to POST alerts to (Slack/Teams compatible)
+- <code>--alert-min-severity [info|warning|critical]</code> - Minimum severity to dispatch (default: warning)
+- <code>--alert-dedupe-window &lt;sec&gt;</code> - Suppress duplicate alerts for the same exe+severity within this window (default: 60)
+- <code>--alert-rate-limit &lt;N&gt;</code> - Maximum alerts dispatched per minute (default: 60)
+- <code>--help, -h</code> - Show help message</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Run daemon in foreground with default settings (monitor mode)
+sysguardd daemon
+
+# Run in background with enforce mode
+sysguardd daemon --background --mode enforce
+
+# Run with custom policy file
+sysguardd daemon --policy /etc/sysguardd/strict.policy
+
+# Run in enforce mode with custom policy in background
+sysguardd daemon -b --mode enforce --policy /var/sysguardd/prod.policy
+
+# Run with node labelling and policy version for traceable audit logs
+sysguardd daemon --node-id k8s-node-01 --policy-version v1.2.3
+
+# Enable Slack webhook alerts for critical deny events only
+sysguardd daemon --mode enforce \
+  --alert-enabled \
+  --alert-webhook-url http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --alert-min-severity critical
+
+# Enable alerts with noise-reduction tuning
+sysguardd daemon --mode monitor \
+  --alert-enabled \
+  --alert-webhook-url http://hooks.example.com/sysguardd \
+  --alert-min-severity warning \
+  --alert-dedupe-window 120 \
+  --alert-rate-limit 20
+</code></pre>
+<hr />
+<h3 id="status-check-daemon-status">status - Check Daemon Status<a class="headerlink" href="#status-check-daemon-status" title="Permanent link">&para;</a></h3>
+<p>Display the current operational status of the daemon.</p>
+<pre><code class="language-bash">sysguardd status [options]
+</code></pre>
+<p><strong>Options:</strong>
+- <code>--json, -j</code> - Output in JSON format (suitable for scripts)
+- <code>--help, -h</code> - Show help message</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Human-readable status
+$ sysguardd status
+SysGuardd Status
+  Version: 0.1.0-alpha
+  Status: running
+  Mode: monitor
+  Policy: /etc/sysguardd/default.policy
+  PID: 1809592
+
+# JSON output for programmatic use
+$ sysguardd status --json
+{
+  &quot;version&quot;: &quot;0.1.0-alpha&quot;,
+  &quot;status&quot;: &quot;running&quot;,
+  &quot;mode&quot;: &quot;monitor&quot;,
+  &quot;policy&quot;: &quot;/etc/sysguardd/default.policy&quot;,
+  &quot;pid&quot;: 1809592,
+  &quot;uptime_seconds&quot;: 0
+}
+</code></pre>
+<hr />
+<h3 id="config-view-configuration">config - View Configuration<a class="headerlink" href="#config-view-configuration" title="Permanent link">&para;</a></h3>
+<p>Display the current daemon configuration.</p>
+<pre><code class="language-bash">sysguardd config [options]
+</code></pre>
+<p><strong>Options:</strong>
+- <code>--json, -j</code> - Output in JSON format
+- <code>--help, -h</code> - Show help message</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Human-readable configuration
+$ sysguardd config
+SysGuardd Configuration
+  Mode: monitor
+  Policy: /etc/sysguardd/default.policy
+  Log Level: info
+  Audit Output: stdout
+
+# JSON output for integration with other tools
+$ sysguardd config --json
+{
+  &quot;mode&quot;: &quot;monitor&quot;,
+  &quot;policy_path&quot;: &quot;/etc/sysguardd/default.policy&quot;,
+  &quot;log_level&quot;: &quot;info&quot;,
+  &quot;audit_output&quot;: &quot;stdout&quot;
+}
+</code></pre>
+<hr />
+<h3 id="version-show-version-information">version - Show Version Information<a class="headerlink" href="#version-show-version-information" title="Permanent link">&para;</a></h3>
+<p>Display version and build information.</p>
+<pre><code class="language-bash">sysguardd version
+</code></pre>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash">$ sysguardd version
+SysGuardd version 0.1.0-alpha
+Build date: May 13 2026
+</code></pre>
+<hr />
+<h3 id="mode-switch-enforcement-mode">mode - Switch Enforcement Mode<a class="headerlink" href="#mode-switch-enforcement-mode" title="Permanent link">&para;</a></h3>
+<p>View or switch between monitor and enforce modes.</p>
+<pre><code class="language-bash">sysguardd mode [monitor|enforce]
+</code></pre>
+<p><strong>Modes:</strong>
+- <code>monitor</code> - Log violations without blocking (default for safety)
+- <code>enforce</code> - Actively terminate unauthorized processes</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Show current mode
+$ sysguardd mode
+Current mode: monitor
+
+# Switch to enforce mode
+$ sysguardd mode enforce
+Switching mode to: enforce
+(mode switching not yet implemented, restart daemon to apply)
+
+# Switch back to monitor mode
+$ sysguardd mode monitor
+Switching mode to: monitor
+(mode switching not yet implemented, restart daemon to apply)
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Phase 1 requires daemon restart to apply mode changes. Hot-reload is planned for Phase 1B.</p>
+</blockquote>
+<hr />
+<h3 id="policy-manage-policies">policy - Manage Policies<a class="headerlink" href="#policy-manage-policies" title="Permanent link">&para;</a></h3>
+<p>Manage enforcement policies.</p>
+<pre><code class="language-bash">sysguardd policy &lt;subcommand&gt; [args]
+</code></pre>
+<p><strong>Subcommands:</strong></p>
+<h4 id="policy-validate-file"><code>policy validate &lt;file&gt;</code><a class="headerlink" href="#policy-validate-file" title="Permanent link">&para;</a></h4>
+<p>Validate policy file syntax before applying.</p>
+<pre><code class="language-bash">$ sysguardd policy validate /tmp/new-policy.txt
+Policy validation successful
+  File: /tmp/new-policy.txt
+  Lines: 42
+  Syntax: OK
+</code></pre>
+<h4 id="policy-load-file"><code>policy load &lt;file&gt;</code><a class="headerlink" href="#policy-load-file" title="Permanent link">&para;</a></h4>
+<p>Load and apply a new policy.</p>
+<pre><code class="language-bash">$ sysguardd policy load /etc/sysguardd/strict.policy
+Loading policy: /etc/sysguardd/strict.policy
+(hot-reload not yet implemented, restart daemon to apply)
+</code></pre>
+<h4 id="policy-current"><code>policy current</code><a class="headerlink" href="#policy-current" title="Permanent link">&para;</a></h4>
+<p>Show the currently active policy file.</p>
+<pre><code class="language-bash">$ sysguardd policy current
+Current policy: /etc/sysguardd/default.policy
+(policy introspection not yet implemented)
+</code></pre>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Validate a new policy before deployment
+sysguardd policy validate /tmp/staging-policy.txt
+
+# View all policy subcommands
+sysguardd policy
+sysguardd help policy
+
+# Check current policy
+sysguardd policy current
+</code></pre>
+<hr />
+<h3 id="logs-view-audit-logs">logs - View Audit Logs<a class="headerlink" href="#logs-view-audit-logs" title="Permanent link">&para;</a></h3>
+<p>View or stream audit logs.</p>
+<pre><code class="language-bash">sysguardd logs [options]
+</code></pre>
+<p><strong>Options:</strong>
+- <code>--follow, -f</code> - Stream logs in real-time (like <code>tail -f</code>)
+- <code>--tail &lt;N&gt;, -n &lt;N&gt;</code> - Show last N log entries (default: 10)
+- <code>--help, -h</code> - Show help message</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># View last 10 audit log entries
+$ sysguardd logs
+Last 10 audit log entries:
+(log archival not yet implemented)
+
+# View last 50 entries
+$ sysguardd logs --tail 50
+
+# Stream logs in real-time
+$ sysguardd logs --follow
+Following audit logs (stream mode not yet implemented)...
+
+# Tail logs with many entries
+$ sysguardd logs -f -n 100
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Log archival and streaming are planned for Phase 1B. Currently supports JSON output to stdout during daemon execution.</p>
+</blockquote>
+<hr />
+<h3 id="help-get-help">help - Get Help<a class="headerlink" href="#help-get-help" title="Permanent link">&para;</a></h3>
+<p>Show help information for commands.</p>
+<pre><code class="language-bash">sysguardd help [command]
+</code></pre>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Show all available commands
+$ sysguardd help
+
+# Get help for a specific command
+$ sysguardd help daemon
+$ sysguardd help policy
+$ sysguardd help mode
+
+# Use global --help flag
+$ sysguardd daemon --help
+$ sysguardd policy --help
+</code></pre>
+<hr />
+<h2 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
+<p>These options work with any command:</p>
+<ul>
+<li><code>--help, -h</code> - Show help for the command</li>
+<li><code>--version, -v</code> - Show version information</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash">sysguardd --help
+sysguardd -h
+sysguardd daemon --help
+sysguardd status --version
+sysguardd --version
+</code></pre>
+<hr />
+<h2 id="common-usage-patterns">Common Usage Patterns<a class="headerlink" href="#common-usage-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="development-setup">Development Setup<a class="headerlink" href="#development-setup" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Build from source
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+
+# Test policy before deployment
+./build/sysguardd policy validate ./policies/default.policy
+
+# Run daemon in foreground
+./build/sysguardd daemon --mode monitor
+</code></pre>
+<h3 id="production-deployment">Production Deployment<a class="headerlink" href="#production-deployment" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Check version before deployment
+sysguardd version
+
+# Validate custom policy
+sysguardd policy validate /etc/sysguardd/production.policy
+
+# Start daemon with custom policy in enforce mode
+sysguardd daemon --background --mode enforce --policy /etc/sysguardd/production.policy
+
+# Monitor status
+sysguardd status --json | jq .
+</code></pre>
+<h3 id="monitoring-and-troubleshooting">Monitoring and Troubleshooting<a class="headerlink" href="#monitoring-and-troubleshooting" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Check daemon status
+sysguardd status
+
+# Get configuration as JSON for integration
+sysguardd config --json
+
+# View audit logs
+sysguardd logs --tail 50
+
+# Stream logs in real-time
+sysguardd logs --follow
+
+# Show operational mode
+sysguardd mode
+</code></pre>
+<h3 id="policy-management">Policy Management<a class="headerlink" href="#policy-management" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Safe workflow for policy updates
+sysguardd policy validate /tmp/staging-policy.txt  # Validate first
+sysguardd policy load /tmp/staging-policy.txt      # Load (restart needed)
+sysguardd mode enforce                              # Switch mode if ready
+sysguardd status                                    # Verify
+</code></pre>
+<hr />
+<h2 id="integration-examples">Integration Examples<a class="headerlink" href="#integration-examples" title="Permanent link">&para;</a></h2>
+<h3 id="with-systemd">With systemd<a class="headerlink" href="#with-systemd" title="Permanent link">&para;</a></h3>
+<p>The daemon is managed as a systemd service:</p>
+<pre><code class="language-bash"># Start daemon
+systemctl start sysguardd
+
+# Check status
+systemctl status sysguardd
+
+# View logs
+journalctl -u sysguardd -f
+
+# Get daemon status via CLI
+sysguardd status
+</code></pre>
+<h3 id="with-container-orchestration">With Container Orchestration<a class="headerlink" href="#with-container-orchestration" title="Permanent link">&para;</a></h3>
+<p>In Kubernetes, the daemon runs as a DaemonSet:</p>
+<pre><code class="language-bash"># Deploy daemon
+kubectl apply -f k8s/sysguardd-daemonset.yaml
+
+# Check pod status
+kubectl get daemonset sysguardd -o json | jq '.status'
+
+# Check daemon status from pod
+kubectl exec -it &lt;pod&gt; -- sysguardd status
+
+# Stream audit logs
+kubectl logs -f &lt;pod&gt;
+</code></pre>
+<hr />
+<h2 id="phase-timeline">Phase Timeline<a class="headerlink" href="#phase-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-current">Phase 1 (Current)<a class="headerlink" href="#phase-1-current" title="Permanent link">&para;</a></h3>
+<ul>
+<li>DONE: Docker-like CLI interface</li>
+<li>DONE: Status/config inspection with JSON output</li>
+<li>DONE: Policy validation</li>
+<li>IN PROGRESS: Policy hot-reload</li>
+<li>IN PROGRESS: Log archival and streaming</li>
+</ul>
+<h3 id="phase-1b">Phase 1B<a class="headerlink" href="#phase-1b" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Log streaming to stdout/journal</li>
+<li>gRPC telemetry endpoint</li>
+<li>Daemon fork/background mode</li>
+<li>Configuration file support</li>
+</ul>
+<h3 id="phase-2">Phase 2+<a class="headerlink" href="#phase-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Advanced policy syntax</li>
+<li>Multi-tenant isolation</li>
+<li>High-performance kernel hooks (eBPF)</li>
+<li>Distributed tracing</li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="command-not-found">Command not found<a class="headerlink" href="#command-not-found" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># Ensure sysguardd is in PATH
+which sysguardd
+
+# Or use full path
+/usr/local/bin/sysguardd status
+</code></pre>
+<h3 id="permission-denied">Permission denied<a class="headerlink" href="#permission-denied" title="Permanent link">&para;</a></h3>
+<p>Some commands may require elevated privileges:</p>
+<pre><code class="language-bash">sudo sysguardd daemon --mode enforce
+sudo sysguardd mode enforce
+sudo sysguardd policy load /etc/sysguardd/admin-policy.txt
+</code></pre>
+<h3 id="status-shows-not-running">Status shows "not running"<a class="headerlink" href="#status-shows-not-running" title="Permanent link">&para;</a></h3>
+<p>The daemon may not be started:</p>
+<pre><code class="language-bash">sysguardd daemon                           # Start in foreground
+# OR
+systemctl start sysguardd                  # Start via systemd
+</code></pre>
+<hr />
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../ARCHITECTURE/">ARCHITECTURE.md</a> - System design and components</li>
+<li><a href="../OPERATIONS/">OPERATIONS.md</a> - Operational procedures</li>
+<li><a href="../INSTALL-TEST/">INSTALL-TEST.md</a> - Installation instructions</li>
+<li><a href="../ROADMAP/">ROADMAP.md</a> - Feature roadmap and phases</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      
+    
+  </body>
+</html>
