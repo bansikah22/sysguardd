@@ -110,7 +110,7 @@ Design:
 - Receives events via a bounded in-process queue (max 128 entries); oldest entry dropped on overflow.
 - Applies per-key deduplication (`exe + severity`) within a configurable window to suppress repeated alerts.
 - Applies token-bucket rate limiting (configurable per-minute cap) to prevent alert storms.
-- Posts Slack/Teams-compatible JSON payloads via plain HTTP POST.
+- Posts Slack/Teams-compatible JSON payloads via HTTP or HTTPS POST.
 - Delivery failures are logged to stderr; the daemon runtime is never interrupted.
 - Instantiated only when `--alert-enabled` is passed; zero overhead when disabled.
 
@@ -149,6 +149,5 @@ Design:
 - Behavioral heuristics layered on deterministic policies.
 - Monitoring API (`/health`, `/status`, `/events`, `/stats`) with token authentication.
 - Read-only web dashboard for live event feed and blocked-executable trends.
-- HTTPS webhook support for the Alert Dispatcher.
 - gRPC telemetry stream for SIEM integration.
 - eBPF CO-RE portability optimization.

@@ -60,7 +60,7 @@ For monitor-mode deployments during policy tuning:
 ```bash
 sysguardd daemon --mode monitor \
   --alert-enabled \
-  --alert-webhook-url http://hooks.example.com/sysguardd \
+  --alert-webhook-url https://hooks.example.com/sysguardd \
   --alert-min-severity warning \
   --alert-dedupe-window 120 \
   --alert-rate-limit 20
@@ -71,7 +71,7 @@ sysguardd daemon --mode monitor \
 | Flag | Default | Description |
 |---|---|---|
 | `--alert-enabled` | off | Enable the dispatcher. Without this flag no dispatcher is created. |
-| `--alert-webhook-url` | — | HTTP URL to POST alerts to. Only `http://` is supported. |
+| `--alert-webhook-url` | — | Webhook URL to POST alerts to. Both `http://` and `https://` are supported. |
 | `--alert-min-severity` | `warning` | Drop alerts below this level. Values: `info`, `warning`, `critical`. |
 | `--alert-dedupe-window` | `60` | Seconds. Suppress repeated alerts for the same exe+severity. |
 | `--alert-rate-limit` | `60` | Max alerts dispatched per minute. Excess alerts are dropped silently. |

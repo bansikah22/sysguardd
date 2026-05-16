@@ -1,6 +1,14 @@
 # Installation and Testing Guide
 
+This page is primarily for end users installing SysGuardd on Linux hosts.
+
+If you are a contributor or maintainer, use [Maintainer Guide](MAINTAINERS.md) for internal release and publishing workflows.
+
 ## Supported Installation Paths
+
+Recommended for most users:
+- Use Section 1 (scripted installation).
+- Then run the runtime smoke test in the testing section.
 
 ### 1) Scripted Installation (Cross-Platform)
 Use project scripts for macOS and major Linux families.
@@ -20,11 +28,11 @@ Linux + systemd install (install, enable, start service):
 Curl or wget style usage (remote mode):
 
 ```bash
-curl -fsSL <RAW_INSTALL_SCRIPT_URL> -o install.sh && bash install.sh --repo-url <GIT_REPO_URL> --ref main --smoke-test
+curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/master/scripts/install.sh -o install.sh && bash install.sh --repo-url https://github.com/bansikah22/sysguardd.git --ref master --smoke-test
 ```
 
 ```bash
-wget -qO install.sh <RAW_INSTALL_SCRIPT_URL> && bash install.sh --repo-url <GIT_REPO_URL> --ref main --smoke-test
+wget -qO install.sh https://raw.githubusercontent.com/bansikah22/sysguardd/master/scripts/install.sh && bash install.sh --repo-url https://github.com/bansikah22/sysguardd.git --ref master --smoke-test
 ```
 
 Non-developer one-command setup (install + build + test + system install):
@@ -142,7 +150,7 @@ cmake --build build
 
 No package manager steps are required in this path.
 
-### 4) CI-Based Installation and Validation
+### 4) Contributor Validation in CI (Maintainers)
 The repository includes a hardened CI workflow at [ci.yml](https://github.com/bansikah22/sysguardd/blob/master/.github/workflows/ci.yml).
 
 CI provisions dependencies on every run and executes:
@@ -150,9 +158,12 @@ CI provisions dependencies on every run and executes:
 - sanitizer-enabled debug run
 - static analysis with cppcheck and clang-tidy
 
-This path is useful when you want reproducible validation without local setup drift.
+This path is intended for maintainers and contributors who need reproducible validation without local setup drift.
 
 ## Testing Methods
+
+For end users, start with the runtime smoke test.
+Sections for sanitizer and static analysis are primarily contributor-focused.
 
 ### 1) Unit and Integration Baseline Tests
 Run all tests:

@@ -17,16 +17,21 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - Home: index.md
-  - Architecture: ARCHITECTURE.md
-  - Components: COMPONENTS.md
-  - CLI: CLI.md
-  - Operations: OPERATIONS.md
-  - Kubernetes: KUBERNETES.md
-  - Helm Distribution: HELM_DISTRIBUTION.md
-  - Helm Quick Reference: HELM_QUICK_REFERENCE.md
-  - Helm Publishing Setup: HELM_PUBLISHING_SETUP.md
-  - Install & Test: INSTALL-TEST.md
-  - Event Injection Testing: EVENT_INJECTION_TESTING.md
-  - Roadmap: ROADMAP.md
+  - Overview: index.md
+  - User Guide:
+    - Quick Start: USER_GUIDE.md
+    - Installation and Validation: INSTALL-TEST.md
+    - CLI Reference: CLI.md
+    - Operations Guide: OPERATIONS.md
+    - Kubernetes Deployment: KUBERNETES.md
+  - Technical Reference:
+    - Architecture: ARCHITECTURE.md
+    - Components: COMPONENTS.md
+  - Maintainers:
+    - Maintainer Guide: MAINTAINERS.md
+    - Helm Distribution: HELM_DISTRIBUTION.md
+    - Helm Quick Reference: HELM_QUICK_REFERENCE.md
+    - Helm Publishing Setup: HELM_PUBLISHING_SETUP.md
+    - Event Injection Testing: EVENT_INJECTION_TESTING.md
+    - Roadmap: ROADMAP.md
 

@@ -63,13 +63,13 @@ sysguardd daemon --node-id k8s-node-01 --policy-version v1.2.3
 # Enable Slack webhook alerts for critical deny events only
 sysguardd daemon --mode enforce \
   --alert-enabled \
-  --alert-webhook-url http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --alert-webhook-url https://hooks.slack.com/services/XXX/YYY/ZZZ \
   --alert-min-severity critical
 
 # Enable alerts with noise-reduction tuning
 sysguardd daemon --mode monitor \
   --alert-enabled \
-  --alert-webhook-url http://hooks.example.com/sysguardd \
+  --alert-webhook-url https://hooks.example.com/sysguardd \
   --alert-min-severity warning \
   --alert-dedupe-window 120 \
   --alert-rate-limit 20

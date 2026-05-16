@@ -101,7 +101,7 @@ helm install sysguardd ./helm \
   --namespace kube-system \
   --set sysguardd.mode=enforce \
   --set sysguardd.alert.enabled=true \
-  --set sysguardd.alert.webhookUrl=http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --set sysguardd.alert.webhookUrl=https://hooks.slack.com/services/XXX/YYY/ZZZ \
   --set sysguardd.alert.minSeverity=critical
 ```
 
@@ -113,7 +113,7 @@ Store the webhook URL in a Kubernetes Secret so it is never embedded in Helm val
 # Create the secret
 kubectl create secret generic sysguardd-alerts \
   --namespace kube-system \
-  --from-literal=webhook-url=http://hooks.slack.com/services/XXX/YYY/ZZZ
+  --from-literal=webhook-url=https://hooks.slack.com/services/XXX/YYY/ZZZ
 ```
 
 ```bash
