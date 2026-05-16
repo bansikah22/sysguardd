@@ -343,9 +343,13 @@ bool send_https_post_socket(const ParsedWebhookUrl& parsed, const std::string& b
   return ok;
 }
 
-bool send_webhook_request(const std::string& url, const std::string& body) {
+bool send_webhook_request(const char* webhook_url, const std::string& body) {
+  if (webhook_url == nullptr) {
+    return false;
+  }
+
   ParsedWebhookUrl parsed;
-  if (!parse_webhook_url(url, parsed)) {
+  if (!parse_webhook_url(webhook_url, parsed)) {
     return false;
   }
 
@@ -478,7 +482,7 @@ void AlertDispatcher::send_webhook(const AlertEvent& evt) {
     return;
   }
   const auto payload = build_webhook_payload(evt);
-  if (!send_webhook_request(cfg_.webhook_url, payload)) {
+  if (!send_webhook_request(cfg_.webhook_url.c_str(), payload)) {
     std::cerr << "alert: webhook delivery failed for event " << evt.event_id << "\n";
   }
 }
