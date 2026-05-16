@@ -1,7 +1,9 @@
 #pragma once
 
+#include <atomic>
 #include <istream>
 
+#include "sysguardd/alert_dispatcher.hpp"
 #include "sysguardd/audit_logger.hpp"
 #include "sysguardd/config.hpp"
 #include "sysguardd/mitigator.hpp"
@@ -11,7 +13,9 @@ namespace sysguardd {
 
 class Service {
  public:
-  Service(Mode mode, PolicyEngine policy, Mitigator& mitigator, AuditLogger& logger);
+  // dispatcher may be nullptr when alerting is disabled.
+  Service(Mode mode, PolicyEngine policy, Mitigator& mitigator, AuditLogger& logger,
+          AlertDispatcher* dispatcher = nullptr);
 
   // Event line format:
   // PID PPID EXE [ARG ...]
@@ -20,10 +24,15 @@ class Service {
   void run(std::istream& input);
 
  private:
+  static std::string compute_severity(const Decision& d, Mode mode, bool enforce_failure);
+  static std::string format_event_id(uint64_t counter);
+
   Mode mode_;
   PolicyEngine policy_;
   Mitigator& mitigator_;
   AuditLogger& logger_;
+  AlertDispatcher* dispatcher_;            // non-owning, nullable
+  std::atomic<uint64_t> event_counter_{0};
 };
 
 }  // namespace sysguardd

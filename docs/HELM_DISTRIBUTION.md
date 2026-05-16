@@ -261,7 +261,7 @@ helm install sysguardd sysguardd/sysguardd
 
 ## Support & Updates
 
-- **Documentation**: [docs/KUBERNETES.md](../docs/KUBERNETES.md)
+- **Documentation**: [docs/KUBERNETES.md](KUBERNETES.md)
 - **Issue Tracking**: [GitHub Issues](https://github.com/bansikah22/sysguardd/issues)
 - **Releases**: [GitHub Releases](https://github.com/bansikah22/sysguardd/releases)
 

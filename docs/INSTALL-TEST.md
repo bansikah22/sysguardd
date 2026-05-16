@@ -143,7 +143,7 @@ cmake --build build
 No package manager steps are required in this path.
 
 ### 4) CI-Based Installation and Validation
-The repository includes a hardened CI workflow at [.github/workflows/ci.yml](../.github/workflows/ci.yml).
+The repository includes a hardened CI workflow at [ci.yml](https://github.com/bansikah22/sysguardd/blob/master/.github/workflows/ci.yml).
 
 CI provisions dependencies on every run and executes:
 - multi-compiler build matrix (GCC and Clang)

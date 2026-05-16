@@ -21,6 +21,7 @@ add_library(sysguardd_core
   src/policy_engine.cpp
   src/mitigator.cpp
   src/audit_logger.cpp
+  src/alert_dispatcher.cpp
   src/service.cpp
 )
 

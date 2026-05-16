@@ -7,28 +7,40 @@ This document describes each component in the SysGuardd codebase, its responsibi
 SysGuardd is organized into several key components that work together to enforce runtime process policies:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  User Interface (CLI)                      [cli.hpp/cpp]   │
-├─────────────────────────────────────────────────────────────┤
-│  Configuration Management                  [config.hpp/cpp] │
-├─────────────────────────────────────────────────────────────┤
-│  Service Loop                              [service.hpp/cpp]│
-│                                                              │
-│  ┌─────────────────────┐  ┌──────────────┐  ┌──────────┐  │
-│  │ Policy Engine       │  │ Mitigator    │  │ Logger   │  │
-│  │ [policy_engine.*]   │  │ [mitigator.*]│  │ [audit_  │  │
-│  │                     │  │              │  │ logger.*]│  │
-│  │ - Deny-list lookup  │  │ - SIGKILL    │  │ - JSON   │  │
-│  │ - O(1) decisions    │  │ - Safety     │  │ - Thread │  │
-│  │ - Policy loading    │  │   guards     │  │ - safe   │  │
-│  └─────────────────────┘  └──────────────┘  └──────────┘  │
-│                                                              │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │ Event Model                   [event.hpp]            │  │
-│  │ - ProcessEvent: Executable path, args, timestamps    │  │
-│  │ - Decision: Allow/deny with reasons                  │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  User Interface (CLI)                         [cli.hpp/cpp]      │
+├──────────────────────────────────────────────────────────────────┤
+│  Configuration Management                     [config.hpp/cpp]   │
+│  (mode, policy_path, node_id, policy_version, AlertConfig)       │
+├──────────────────────────────────────────────────────────────────┤
+│  Service Loop                                 [service.hpp/cpp]  │
+│                                                                   │
+│  ┌──────────────────┐  ┌──────────────┐  ┌─────────────────┐   │
+│  │ Policy Engine    │  │ Mitigator    │  │ Audit Logger    │   │
+│  │[policy_engine.*] │  │[mitigator.*] │  │[audit_logger.*] │   │
+│  │                  │  │              │  │                 │   │
+│  │ - Deny-list      │  │ - SIGKILL    │  │ - JSON output   │   │
+│  │ - O(1) decisions │  │ - Safety     │  │ - event_id      │   │
+│  │ - Policy loading │  │   guards     │  │ - severity      │   │
+│  └──────────────────┘  └──────────────┘  │ - node_id       │   │
+│                                           │ - policy_version│   │
+│                                           │ - Thread-safe   │   │
+│                                           └─────────────────┘   │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ Alert Dispatcher (optional)  [alert_dispatcher.hpp/cpp]    │  │
+│  │ - Non-blocking background worker thread                    │  │
+│  │ - Bounded queue (max 128), dedupe, token-bucket rate limit │  │
+│  │ - HTTP POST to Slack/Teams-compatible webhook              │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ Event Model                        [event.hpp]             │  │
+│  │ - ProcessEvent: pid, ppid, exe, args, timestamp            │  │
+│  │ - Decision: allowed bool + reason string                   │  │
+│  │ - AlertEvent: event_id, severity, node_id, exe, reason     │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -218,13 +230,15 @@ public:
 ```cpp
 class AuditLogger {
 public:
-  explicit AuditLogger(std::ostream& stream);
+  AuditLogger(std::ostream& stream, std::string node_id, std::string policy_version);
   void log(
     const ProcessEvent& event,
     const Decision& decision,
     bool enforced,
-    const std::string& action = "",
-    const std::string& action_error = ""
+    const std::string& action,
+    const std::string& action_error,
+    const std::string& event_id,
+    const std::string& severity
   );
 };
 ```
@@ -232,24 +246,74 @@ public:
 **Output Format (JSON):**
 ```json
 {
-  "timestamp": "2026-05-13T10:00:00.123Z",
+  "timestamp": "2026-05-16T08:12:43Z",
+  "event_id": "0000000000000000",
+  "severity": "critical",
+  "node_id": "k8s-node-01",
+  "policy_version": "v1.2.3",
   "pid": 1234,
   "ppid": 1,
-  "exe": "/usr/bin/bash",
-  "args": ["-c", "whoami"],
+  "exe": "/bin/bash",
   "decision": "deny",
-  "reason": "executable in deny-list",
+  "reason": "deny_executable_match",
   "enforced": true,
-  "action": "SIGKILL",
-  "action_error": null
+  "action": "sigkill",
+  "action_error": ""
 }
 ```
+
+**Severity Mapping:**
+| Mode | Decision | Enforce failure | Severity |
+|---|---|---|---|
+| any | allow | — | `info` |
+| monitor | deny | — | `warning` |
+| enforce | deny | no | `critical` |
+| enforce | deny | yes | `critical` |
 
 **Design Notes:**
 - One event per line (suitable for log aggregation)
 - Timestamps in ISO8601 format
+- `event_id` is a zero-padded 64-bit hex counter, monotonic per daemon run
+- `node_id` defaults to system hostname; overridable via `--node-id`
+- `policy_version` is an optional tag set via `--policy-version`
 - Thread-safe via mutex (supports future async logging)
-- Escapable output for special characters
+- All string fields are JSON-escaped to prevent injection (CWE-116)
+
+---
+
+### 6a. Alert Dispatcher (`include/sysguardd/alert_dispatcher.hpp`, `src/alert_dispatcher.cpp`)
+
+**Purpose:** Non-blocking, thread-safe dispatcher that forwards security alert events to a configured webhook endpoint.
+
+**Responsibilities:**
+- Receive alert events from the Service loop without blocking it
+- Apply per-key deduplication to suppress repeated alerts for the same executable
+- Apply token-bucket rate limiting to prevent alert storms
+- Deliver Slack/Teams-compatible JSON payloads via HTTP POST
+- Report delivery failures to stderr without crashing the daemon
+
+**Key Methods:**
+```cpp
+class AlertDispatcher {
+public:
+  AlertDispatcher(const AlertConfig& cfg, std::string node_id, std::string policy_version);
+  void dispatch(AlertEvent event);  // non-blocking; queues for background delivery
+};
+```
+
+**Webhook Payload Example (Slack/Teams):**
+```json
+{"text": "*[sysguardd][critical]* Process event on `k8s-node-01`\nexe: `/bin/bash`\npid: 1234\nreason: deny_executable_match\naction: sigkill\nevent_id: 0000000000000000\npolicy_version: v1.2.3"}
+```
+
+**Design Notes:**
+- Background worker thread drains a bounded queue (max 128 entries)
+- If queue is full the oldest entry is silently dropped — daemon runtime is never blocked
+- Deduplication key is `exe + severity`; configurable window via `--alert-dedupe-window`
+- Token-bucket refills to `rate_limit_per_minute` every 60 seconds
+- Alerts below `min_severity` threshold are discarded before queuing
+- Alerts are only created when `--alert-enabled` is passed; dispatcher is not instantiated otherwise
+- Only `http://` URLs are supported; TLS support requires a future dependency
 
 ---
 
@@ -261,15 +325,19 @@ public:
 - Read process events from input (stdin in Phase 1)
 - Parse event format (PID PPID EXE [ARG ...])
 - Apply policy engine to events
+- Assign a monotonic `event_id` and compute `severity` per event
 - Trigger mitigation for denials
 - Log all decisions to audit stream
+- Dispatch alerts for deny and enforce-failure events
 - Handle errors gracefully
 
 **Key Methods:**
 ```cpp
 class Service {
 public:
-  Service(Mode mode, PolicyEngine engine, Mitigator& mitigator, AuditLogger& logger);
+  // dispatcher may be nullptr when alerting is disabled
+  Service(Mode mode, PolicyEngine engine, Mitigator& mitigator,
+          AuditLogger& logger, AlertDispatcher* dispatcher = nullptr);
   void run(std::istream& input);
 };
 ```
@@ -277,10 +345,13 @@ public:
 **Event Processing Flow:**
 1. Read line from input (max 4096 bytes for safety)
 2. Parse into ProcessEvent (PID PPID EXE [ARGS...])
-3. Evaluate with PolicyEngine
-4. Log decision to AuditLogger
-5. If denied and enforce mode: call Mitigator::kill_process()
-6. Continue to next event
+3. Assign monotonic `event_id` (hex counter)
+4. Evaluate with PolicyEngine → Decision
+5. Compute `severity` from Decision + Mode
+6. Log decision to AuditLogger (includes `event_id`, `severity`, `node_id`, `policy_version`)
+7. If denied and enforce mode: call `Mitigator::kill_process()`
+8. If denied or enforce-failure: queue `AlertEvent` to AlertDispatcher (non-blocking)
+9. Continue to next event
 
 **Error Handling:**
 - Lines exceeding 4096 bytes are dropped with logging
@@ -290,6 +361,8 @@ public:
 
 **Design Notes:**
 - Dependency injection for testability (references to engine, mitigator, logger)
+- AlertDispatcher pointer is nullable — passing `nullptr` disables alerting with zero overhead
+- `event_id` is a zero-padded 64-bit hex counter from a `std::atomic<uint64_t>` — safe for concurrent future use
 - Event loop reads from stdin for Phase 1 baseline
 - Phase 1B will replace stdin with eBPF kernel probe
 - Support for both monitor and enforce modes
@@ -313,12 +386,14 @@ main()
   ├─> parse_cli_args()
   ├─> Check if legacy daemon mode or new CLI
   ├─> If CLI: execute_command()
-  └─> If daemon: 
-        ├─> parse_config()
+  └─> If daemon:
+        ├─> parse_config()  (includes AlertConfig, node_id, policy_version)
         ├─> load policy_engine
         ├─> create mitigator
-        ├─> create audit_logger
-        ├─> run service.run(stdin)
+        ├─> create audit_logger(node_id, policy_version)
+        ├─> if alert.enabled: create AlertDispatcher
+        ├─> create Service(mode, engine, mitigator, logger, dispatcher?)
+        └─> run service.run(stdin)
 ```
 
 **Error Handling:**
@@ -333,38 +408,41 @@ main()
 ### Example: Process Blocked by Policy
 
 ```
-┌──────────────────┐
-│ Input Event:     │
-│ 1234 1 /bin/nc   │
-└────────┬──────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│ Service::run()                          │
-│ - Parse event line                      │
-│ - Create ProcessEvent object            │
-└──────────────┬──────────────────────────┘
-               │
-               ▼
-┌──────────────────────────────────────────┐
-│ PolicyEngine::evaluate(ProcessEvent)     │
-│ - Check if /bin/nc in deny-list          │
-│ - Return: Decision{false, "in deny-list"}│
-└──────────────┬───────────────────────────┘
-               │ (denied)
-               ▼
-┌──────────────────────────────────────────┐
-│ Service::run() (continue)                │
-│ - Check enforcement mode                 │
-│ - If enforce: call Mitigator::kill_process(1234)
-└──────────────┬───────────────────────────┘
-               │
-               ▼
-┌──────────────────────────────────────────┐
-│ AuditLogger::log(event, decision,...)    │
-│ - Format as JSON                         │
-│ - Write to stdout                        │
-└──────────────────────────────────────────┘
+┌──────────────────────┐
+│ Input Event:         │
+│ 1234 1 /bin/bash -i  │
+└────────┬─────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────┐
+│ Service::run()                               │
+│ - Parse event line -> ProcessEvent           │
+│ - Assign event_id: "0000000000000000"        │
+└──────────────┬───────────────────────────────┘
+     │
+     ▼
+┌──────────────────────────────────────────────┐
+│ PolicyEngine::evaluate(ProcessEvent)         │
+│ - /bin/bash found in deny-list               │
+│ - Return: Decision{false, "deny_executable"} │
+└──────────────┬───────────────────────────────┘
+     │ (denied)
+     ▼
+┌──────────────────────────────────────────────┐
+│ Service::run() (continue)                    │
+│ - compute_severity -> "critical" (enforce)   │
+│ - mode == enforce: Mitigator::kill_process() │
+└──────┬───────────────────────┬───────────────┘
+  │                       │
+  ▼                       ▼
+┌──────────────────┐  ┌──────────────────────────────────────────┐
+│ AuditLogger::log │  │ AlertDispatcher::dispatch(AlertEvent)    │
+│ - JSON to stdout │  │ - Queue to background worker (returns    │
+│ - event_id       │  │   immediately, never blocks)             │
+│ - severity       │  │ - Worker: dedupe check -> rate-limit     │
+│ - node_id        │  │   check -> HTTP POST to webhook          │
+│ - policy_version │  └──────────────────────────────────────────┘
+└──────────────────┘
 ```
 
 ---

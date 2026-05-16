@@ -1,0 +1,32 @@
+site_name: SysGuardd Documentation
+site_description: Runtime process enforcement and observability for Linux and Kubernetes
+site_url: https://bansikah22.github.io/sysguardd/
+repo_url: https://github.com/bansikah22/sysguardd
+repo_name: bansikah22/sysguardd
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Architecture: ARCHITECTURE.md
+  - Components: COMPONENTS.md
+  - CLI: CLI.md
+  - Operations: OPERATIONS.md
+  - Kubernetes: KUBERNETES.md
+  - Helm Distribution: HELM_DISTRIBUTION.md
+  - Helm Quick Reference: HELM_QUICK_REFERENCE.md
+  - Helm Publishing Setup: HELM_PUBLISHING_SETUP.md
+  - Install & Test: INSTALL-TEST.md
+  - Event Injection Testing: EVENT_INJECTION_TESTING.md
+  - Roadmap: ROADMAP.md
+

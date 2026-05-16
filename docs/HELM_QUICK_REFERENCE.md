@@ -122,9 +122,9 @@ helm install sysguardd oci://registry-1.docker.io/bansikah/sysguardd-helm \
 
 ## Resources
 
-- **Full Documentation**: [docs/HELM_DISTRIBUTION.md](../docs/HELM_DISTRIBUTION.md)
-- **Kubernetes Guide**: [docs/KUBERNETES.md](../docs/KUBERNETES.md)
-- **Event Injection Tests**: [docs/EVENT_INJECTION_TESTING.md](../docs/EVENT_INJECTION_TESTING.md)
+- **Full Documentation**: [docs/HELM_DISTRIBUTION.md](HELM_DISTRIBUTION.md)
+- **Kubernetes Guide**: [docs/KUBERNETES.md](KUBERNETES.md)
+- **Event Injection Tests**: [docs/EVENT_INJECTION_TESTING.md](EVENT_INJECTION_TESTING.md)
 - **GitHub Repository**: https://github.com/bansikah22/sysguardd
 - **Docker Hub**: https://hub.docker.com/r/bansikah/sysguardd
 
