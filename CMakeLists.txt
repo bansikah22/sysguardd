@@ -37,3 +37,11 @@ enable_testing()
 add_executable(sysguardd_policy_test tests/test_policy.cpp)
 target_link_libraries(sysguardd_policy_test PRIVATE sysguardd_core)
 add_test(NAME sysguardd_policy_test COMMAND sysguardd_policy_test)
+
+add_executable(sysguardd_alert_dispatcher_test tests/test_alert_dispatcher.cpp)
+target_link_libraries(sysguardd_alert_dispatcher_test PRIVATE sysguardd_core)
+add_test(NAME sysguardd_alert_dispatcher_test COMMAND sysguardd_alert_dispatcher_test)
+
+add_executable(sysguardd_config_dotenv_test tests/test_config_dotenv.cpp)
+target_link_libraries(sysguardd_config_dotenv_test PRIVATE sysguardd_core)
+add_test(NAME sysguardd_config_dotenv_test COMMAND sysguardd_config_dotenv_test)

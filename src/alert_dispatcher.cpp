@@ -47,6 +47,15 @@ std::string alert_json_escape(const std::string& value) {
   return out;
 }
 
+bool has_header_control_chars(const std::string& value) {
+  for (unsigned char c : value) {
+    if (c == '\r' || c == '\n' || c == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // ---- HTTP POST sender -------------------------------------------------------
 
 // Sends a plain HTTP/1.1 POST request over a TCP socket.
@@ -74,6 +83,10 @@ bool send_http_post(const std::string& url, const std::string& body) {
   } else {
     host = hostport.substr(0, colon_pos);
     port_str = hostport.substr(colon_pos + 1);
+    if (port_str.empty()) {
+      std::cerr << "alert: invalid empty port in webhook URL\n";
+      return false;
+    }
     // Validate port is purely numeric (CWE-20)
     for (char c : port_str) {
       if (c < '0' || c > '9') {
@@ -81,10 +94,28 @@ bool send_http_post(const std::string& url, const std::string& body) {
         return false;
       }
     }
+
+    size_t pos = 0;
+    unsigned long parsed_port = 0;
+    try {
+      parsed_port = std::stoul(port_str, &pos, 10);
+    } catch (const std::exception&) {
+      std::cerr << "alert: invalid port in webhook URL\n";
+      return false;
+    }
+    if (pos != port_str.size() || parsed_port < 1 || parsed_port > 65535) {
+      std::cerr << "alert: port out of range in webhook URL\n";
+      return false;
+    }
   }
 
   if (host.empty()) {
     std::cerr << "alert: empty host in webhook URL\n";
+    return false;
+  }
+  if (has_header_control_chars(host) || has_header_control_chars(port_str) ||
+      has_header_control_chars(path)) {
+    std::cerr << "alert: invalid control characters in webhook URL\n";
     return false;
   }
 
@@ -179,7 +210,7 @@ AlertDispatcher::AlertDispatcher(const AlertConfig& cfg, std::string node_id,
       policy_version_(std::move(policy_version)),
       min_level_(severity_level(cfg.min_severity)),
       tokens_(cfg.rate_limit_per_minute),
-      last_refill_(std::chrono::system_clock::now()) {
+      last_refill_(std::chrono::steady_clock::now()) {
   worker_ = std::thread(&AlertDispatcher::worker_loop, this);
 }
 
@@ -212,13 +243,13 @@ void AlertDispatcher::dispatch(AlertEvent event) {
 
 bool AlertDispatcher::should_send(const AlertEvent& evt) {
   const auto now = std::chrono::system_clock::now();
+  const auto refill_now = std::chrono::steady_clock::now();
 
-  // Refill token bucket once per minute
-  const auto elapsed_ms =
-      std::chrono::duration_cast<std::chrono::milliseconds>(now - last_refill_).count();
-  if (elapsed_ms >= 60000) {
+  const auto elapsed = refill_now - last_refill_;
+  if (elapsed >= std::chrono::minutes(1)) {
     tokens_ = cfg_.rate_limit_per_minute;
-    last_refill_ = now;
+    const auto minutes_elapsed = std::chrono::duration_cast<std::chrono::minutes>(elapsed);
+    last_refill_ += minutes_elapsed;
   }
 
   if (tokens_ <= 0) {

@@ -46,6 +46,8 @@ SysGuardd includes a built-in non-blocking webhook dispatcher. It is **disabled 
 
 ### Enabling Alerts
 
+For local runs, put `SYSGUARDD_ALERT_WEBHOOK_URL=...` in a repo-root `.env` file. The daemon loads it automatically, and `.env` is already ignored by git.
+
 ```bash
 sysguardd daemon --mode enforce \
   --alert-enabled \

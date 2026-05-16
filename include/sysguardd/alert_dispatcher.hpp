@@ -71,7 +71,7 @@ class AlertDispatcher {
 
   // Token-bucket rate-limit state (worker thread only)
   int tokens_{0};
-  std::chrono::system_clock::time_point last_refill_;
+  std::chrono::steady_clock::time_point last_refill_;
 };
 
 }  // namespace sysguardd
