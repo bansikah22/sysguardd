@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/INSTALL-TEST/">
+        <link rel="canonical" href="https://bansikah22.github.io/sysguardd/USER_GUIDE/">
       
       
-        <link rel="prev" href="../USER_GUIDE/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../CLI/">
+        <link rel="next" href="../INSTALL-TEST/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Installation and Validation - SysGuardd Documentation</title>
+        <title>Quick Start - SysGuardd Documentation</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation-and-testing-guide" class="md-skip">
+        <a href="#sysguardd-quick-start" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation and Validation
+              Quick Start
             
           </span>
         </div>
@@ -278,27 +278,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../USER_GUIDE/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Quick Start
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -315,7 +294,7 @@
           
   
   <span class="md-ellipsis">
-    Installation and Validation
+    Quick Start
   </span>
   
 
@@ -326,7 +305,7 @@
         
   
   <span class="md-ellipsis">
-    Installation and Validation
+    Quick Start
   </span>
   
 
@@ -348,64 +327,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#supported-installation-paths" class="md-nav__link">
+  <a href="#1-install" class="md-nav__link">
     <span class="md-ellipsis">
-      Supported Installation Paths
+      1) Install
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Supported Installation Paths">
+    <nav class="md-nav" aria-label="1) Install">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-scripted-installation-cross-platform" class="md-nav__link">
+  <a href="#option-a-one-command-installer-recommended" class="md-nav__link">
     <span class="md-ellipsis">
-      1) Scripted Installation (Cross-Platform)
+      Option A: One-command installer (recommended)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#11-check-agent-status-after-installation" class="md-nav__link">
+  <a href="#option-b-run-from-source" class="md-nav__link">
     <span class="md-ellipsis">
-      1.1) Check Agent Status After Installation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#12-manage-linux-systemd-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      1.2) Manage Linux systemd Service
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-ubuntu-package-installation-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      2) Ubuntu Package Installation (Recommended)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-source-only-build-with-existing-toolchain" class="md-nav__link">
-    <span class="md-ellipsis">
-      3) Source-Only Build with Existing Toolchain
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-contributor-validation-in-ci-maintainers" class="md-nav__link">
-    <span class="md-ellipsis">
-      4) Contributor Validation in CI (Maintainers)
+      Option B: Run from source
     </span>
   </a>
   
@@ -417,69 +360,45 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#testing-methods" class="md-nav__link">
+  <a href="#2-run-in-monitor-mode-first" class="md-nav__link">
     <span class="md-ellipsis">
-      Testing Methods
+      2) Run in Monitor Mode First
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Testing Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-unit-and-integration-baseline-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      1) Unit and Integration Baseline Tests
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-sanitizer-enabled-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      2) Sanitizer-Enabled Validation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-release-build-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      3) Release Build Validation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-static-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      4) Static Analysis
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-runtime-smoke-test" class="md-nav__link">
-    <span class="md-ellipsis">
-      5) Runtime Smoke Test
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#security-focused-test-expectations" class="md-nav__link">
+  <a href="#3-switch-to-enforce-mode" class="md-nav__link">
     <span class="md-ellipsis">
-      Security-Focused Test Expectations
+      3) Switch to Enforce Mode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-enable-real-time-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Enable Real-time Alerts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-verify-runtime-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Verify Runtime State
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
     </span>
   </a>
   
@@ -489,6 +408,27 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALL-TEST/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation and Validation
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -853,64 +793,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#supported-installation-paths" class="md-nav__link">
+  <a href="#1-install" class="md-nav__link">
     <span class="md-ellipsis">
-      Supported Installation Paths
+      1) Install
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Supported Installation Paths">
+    <nav class="md-nav" aria-label="1) Install">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-scripted-installation-cross-platform" class="md-nav__link">
+  <a href="#option-a-one-command-installer-recommended" class="md-nav__link">
     <span class="md-ellipsis">
-      1) Scripted Installation (Cross-Platform)
+      Option A: One-command installer (recommended)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#11-check-agent-status-after-installation" class="md-nav__link">
+  <a href="#option-b-run-from-source" class="md-nav__link">
     <span class="md-ellipsis">
-      1.1) Check Agent Status After Installation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#12-manage-linux-systemd-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      1.2) Manage Linux systemd Service
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-ubuntu-package-installation-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      2) Ubuntu Package Installation (Recommended)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-source-only-build-with-existing-toolchain" class="md-nav__link">
-    <span class="md-ellipsis">
-      3) Source-Only Build with Existing Toolchain
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-contributor-validation-in-ci-maintainers" class="md-nav__link">
-    <span class="md-ellipsis">
-      4) Contributor Validation in CI (Maintainers)
+      Option B: Run from source
     </span>
   </a>
   
@@ -922,69 +826,45 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#testing-methods" class="md-nav__link">
+  <a href="#2-run-in-monitor-mode-first" class="md-nav__link">
     <span class="md-ellipsis">
-      Testing Methods
+      2) Run in Monitor Mode First
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Testing Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-unit-and-integration-baseline-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      1) Unit and Integration Baseline Tests
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-sanitizer-enabled-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      2) Sanitizer-Enabled Validation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-release-build-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      3) Release Build Validation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-static-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      4) Static Analysis
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-runtime-smoke-test" class="md-nav__link">
-    <span class="md-ellipsis">
-      5) Runtime Smoke Test
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#security-focused-test-expectations" class="md-nav__link">
+  <a href="#3-switch-to-enforce-mode" class="md-nav__link">
     <span class="md-ellipsis">
-      Security-Focused Test Expectations
+      3) Switch to Enforce Mode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-enable-real-time-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Enable Real-time Alerts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-verify-runtime-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Verify Runtime State
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
     </span>
   </a>
   
@@ -1008,136 +888,43 @@
   
 
 
-<h1 id="installation-and-testing-guide">Installation and Testing Guide<a class="headerlink" href="#installation-and-testing-guide" title="Permanent link">&para;</a></h1>
-<p>This page is primarily for end users installing SysGuardd on Linux hosts.</p>
-<p>If you are a contributor or maintainer, use <a href="../MAINTAINERS/">Maintainer Guide</a> for internal release and publishing workflows.</p>
-<h2 id="supported-installation-paths">Supported Installation Paths<a class="headerlink" href="#supported-installation-paths" title="Permanent link">&para;</a></h2>
-<p>Recommended for most users:
-- Use Section 1 (scripted installation).
-- Then run the runtime smoke test in the testing section.</p>
-<h3 id="1-scripted-installation-cross-platform">1) Scripted Installation (Cross-Platform)<a class="headerlink" href="#1-scripted-installation-cross-platform" title="Permanent link">&para;</a></h3>
-<p>Use project scripts for macOS and major Linux families.</p>
-<p>Universal installer script (developer + non-developer):</p>
-<pre><code class="language-bash">./scripts/install.sh --smoke-test
-</code></pre>
-<p>Linux + systemd install (install, enable, start service):</p>
-<pre><code class="language-bash">./scripts/install.sh --systemd
-</code></pre>
-<p>Curl or wget style usage (remote mode):</p>
+<h1 id="sysguardd-quick-start">SysGuardd Quick Start<a class="headerlink" href="#sysguardd-quick-start" title="Permanent link">&para;</a></h1>
+<p>This guide is for end users who want to install and run SysGuardd quickly.</p>
+<h2 id="1-install">1) Install<a class="headerlink" href="#1-install" title="Permanent link">&para;</a></h2>
+<h3 id="option-a-one-command-installer-recommended">Option A: One-command installer (recommended)<a class="headerlink" href="#option-a-one-command-installer-recommended" title="Permanent link">&para;</a></h3>
 <pre><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/bansikah22/sysguardd/master/scripts/install.sh -o install.sh &amp;&amp; bash install.sh --repo-url https://github.com/bansikah22/sysguardd.git --ref master --smoke-test
 </code></pre>
-<pre><code class="language-bash">wget -qO install.sh https://raw.githubusercontent.com/bansikah22/sysguardd/master/scripts/install.sh &amp;&amp; bash install.sh --repo-url https://github.com/bansikah22/sysguardd.git --ref master --smoke-test
-</code></pre>
-<p>Non-developer one-command setup (install + build + test + system install):</p>
-<pre><code class="language-bash">./scripts/nondev-setup.sh
-</code></pre>
-<p>Optional smoke test after setup:</p>
-<pre><code class="language-bash">./scripts/nondev-setup.sh --smoke-test
-</code></pre>
-<p>Install dependencies only:</p>
-<pre><code class="language-bash">./scripts/install-deps.sh
-</code></pre>
-<p>Run end-to-end bootstrap (deps + build + test):</p>
-<pre><code class="language-bash">./scripts/bootstrap.sh
-</code></pre>
-<p>Optional install of binary and default policy:</p>
-<pre><code class="language-bash">./scripts/bootstrap.sh --install
-</code></pre>
-<p>Supported by script detection:
-- Ubuntu or Debian
-- Fedora, RHEL, Rocky, AlmaLinux
-- Arch Linux
-- openSUSE or SLES
-- macOS (with Homebrew)</p>
-<p>Notes for non-developers:
-- The script installs the binary to <code>/usr/local/bin/sysguardd</code> by default.
-- The script installs the status command to <code>/usr/local/bin/sysguardd-status</code>.
-- The script installs the default policy to <code>/etc/sysguardd/default.policy</code>.
-- You can change binary install location with <code>--prefix</code>.</p>
-<h3 id="11-check-agent-status-after-installation">1.1) Check Agent Status After Installation<a class="headerlink" href="#11-check-agent-status-after-installation" title="Permanent link">&para;</a></h3>
-<p>Use the installed status helper:</p>
-<pre><code class="language-bash">sysguardd-status
-</code></pre>
-<p>Require the process to be running:</p>
-<pre><code class="language-bash">sysguardd-status --require-running
-</code></pre>
-<p>Machine-readable status output:</p>
-<pre><code class="language-bash">sysguardd-status --json
-</code></pre>
-<p>If running directly from repository scripts:</p>
-<pre><code class="language-bash">./scripts/status.sh
-</code></pre>
-<h3 id="12-manage-linux-systemd-service">1.2) Manage Linux systemd Service<a class="headerlink" href="#12-manage-linux-systemd-service" title="Permanent link">&para;</a></h3>
-<p>Install or update systemd unit manually:</p>
-<pre><code class="language-bash">./scripts/install-service.sh --enable --start --status
-</code></pre>
-<p>Restart service after config or policy changes:</p>
-<pre><code class="language-bash">./scripts/install-service.sh --restart --status
-</code></pre>
-<p>Uninstall systemd unit:</p>
-<pre><code class="language-bash">./scripts/install-service.sh --uninstall
-</code></pre>
-<p>Direct systemctl commands:</p>
-<pre><code class="language-bash">sudo systemctl status sysguardd.service
-sudo systemctl restart sysguardd.service
-sudo systemctl stop sysguardd.service
-</code></pre>
-<h3 id="2-ubuntu-package-installation-recommended">2) Ubuntu Package Installation (Recommended)<a class="headerlink" href="#2-ubuntu-package-installation-recommended" title="Permanent link">&para;</a></h3>
-<p>Install required toolchain packages:</p>
-<pre><code class="language-bash">sudo apt-get update
-sudo apt-get install -y cmake build-essential ninja-build clang clang-tidy cppcheck
-</code></pre>
-<p>Use this path when developing directly on Ubuntu.</p>
-<h3 id="3-source-only-build-with-existing-toolchain">3) Source-Only Build with Existing Toolchain<a class="headerlink" href="#3-source-only-build-with-existing-toolchain" title="Permanent link">&para;</a></h3>
-<p>If your machine already has CMake and a C/C++ compiler:</p>
+<h3 id="option-b-run-from-source">Option B: Run from source<a class="headerlink" href="#option-b-run-from-source" title="Permanent link">&para;</a></h3>
 <pre><code class="language-bash">cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
+ctest --test-dir build --output-on-failure
 </code></pre>
-<p>No package manager steps are required in this path.</p>
-<h3 id="4-contributor-validation-in-ci-maintainers">4) Contributor Validation in CI (Maintainers)<a class="headerlink" href="#4-contributor-validation-in-ci-maintainers" title="Permanent link">&para;</a></h3>
-<p>The repository includes a hardened CI workflow at <a href="https://github.com/bansikah22/sysguardd/blob/master/.github/workflows/ci.yml">ci.yml</a>.</p>
-<p>CI provisions dependencies on every run and executes:
-- multi-compiler build matrix (GCC and Clang)
-- sanitizer-enabled debug run
-- static analysis with cppcheck and clang-tidy</p>
-<p>This path is intended for maintainers and contributors who need reproducible validation without local setup drift.</p>
-<h2 id="testing-methods">Testing Methods<a class="headerlink" href="#testing-methods" title="Permanent link">&para;</a></h2>
-<p>For end users, start with the runtime smoke test.
-Sections for sanitizer and static analysis are primarily contributor-focused.</p>
-<h3 id="1-unit-and-integration-baseline-tests">1) Unit and Integration Baseline Tests<a class="headerlink" href="#1-unit-and-integration-baseline-tests" title="Permanent link">&para;</a></h3>
-<p>Run all tests:</p>
-<pre><code class="language-bash">ctest --test-dir build --output-on-failure
+<h2 id="2-run-in-monitor-mode-first">2) Run in Monitor Mode First<a class="headerlink" href="#2-run-in-monitor-mode-first" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">./build/sysguardd daemon --mode monitor --policy ./policies/default.policy
 </code></pre>
-<h3 id="2-sanitizer-enabled-validation">2) Sanitizer-Enabled Validation<a class="headerlink" href="#2-sanitizer-enabled-validation" title="Permanent link">&para;</a></h3>
-<p>Use Debug mode with sanitizers enabled:</p>
-<pre><code class="language-bash">cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug -DSYSGUARDD_ENABLE_SANITIZERS=ON
-cmake --build build-debug
-ctest --test-dir build-debug --output-on-failure
+<p>Monitor mode is the safe default and should be used to tune policy before enforce rollouts.</p>
+<h2 id="3-switch-to-enforce-mode">3) Switch to Enforce Mode<a class="headerlink" href="#3-switch-to-enforce-mode" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">./build/sysguardd daemon --mode enforce --policy ./policies/default.policy
 </code></pre>
-<h3 id="3-release-build-validation">3) Release Build Validation<a class="headerlink" href="#3-release-build-validation" title="Permanent link">&para;</a></h3>
-<p>Run strict release checks:</p>
-<pre><code class="language-bash">cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -DSYSGUARDD_ENABLE_SANITIZERS=OFF
-cmake --build build-release
-ctest --test-dir build-release --output-on-failure
+<h2 id="4-enable-real-time-alerts">4) Enable Real-time Alerts<a class="headerlink" href="#4-enable-real-time-alerts" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">./build/sysguardd daemon --mode enforce --alert-enabled --alert-min-severity critical
 </code></pre>
-<h3 id="4-static-analysis">4) Static Analysis<a class="headerlink" href="#4-static-analysis" title="Permanent link">&para;</a></h3>
-<p>Run cppcheck:</p>
-<pre><code class="language-bash">cppcheck --enable=warning,performance,portability --std=c++20 --error-exitcode=1 -I include src tests
+<p>Set webhook URL by environment variable:</p>
+<pre><code class="language-bash">export SYSGUARDD_ALERT_WEBHOOK_URL=&quot;https://hooks.slack.com/services/XXX/YYY/ZZZ&quot;
 </code></pre>
-<p>Run clang-tidy (after CMake configure with compile commands):</p>
-<pre><code class="language-bash">cmake -S . -B build-analyze -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-clang-tidy src/*.cpp tests/*.cpp -p build-analyze -checks=-*,clang-analyzer-*,bugprone-*
+<p>Or store it in a local <code>.env</code> file in the repository root:</p>
+<pre><code class="language-dotenv">SYSGUARDD_ALERT_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ
 </code></pre>
-<h3 id="5-runtime-smoke-test">5) Runtime Smoke Test<a class="headerlink" href="#5-runtime-smoke-test" title="Permanent link">&para;</a></h3>
-<p>Monitor mode smoke test with sample input:</p>
-<pre><code class="language-bash">printf &quot;1200 1 /usr/bin/bash -c whoami\n&quot; | ./build/sysguardd --mode monitor --policy ./policies/default.policy
+<h2 id="5-verify-runtime-state">5) Verify Runtime State<a class="headerlink" href="#5-verify-runtime-state" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">sysguardd status --json
+sysguardd-status --json
 </code></pre>
-<h2 id="security-focused-test-expectations">Security-Focused Test Expectations<a class="headerlink" href="#security-focused-test-expectations" title="Permanent link">&para;</a></h2>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Every deny decision emits an audit record.</li>
-<li>Enforce mode attempts mitigation only for denied events.</li>
-<li>Dangerous kill targets are rejected (PID 1 and self PID).</li>
-<li>Relative or malformed executable paths are denied by policy engine.</li>
+<li>CLI details: <a href="../CLI/">CLI Reference</a></li>
+<li>Production operation checklist: <a href="../OPERATIONS/">Operations Guide</a></li>
+<li>Cluster deployment: <a href="../KUBERNETES/">Kubernetes Deployment</a></li>
+<li>Full install and validation matrix: <a href="../INSTALL-TEST/">Installation and Validation</a></li>
 </ul>
 
 
