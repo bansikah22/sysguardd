@@ -72,21 +72,21 @@ void load_dotenv_file(const char* path) {
   }
 }
 
-int parse_int_arg(const std::string& value, const std::string& flag_name, int min_value,
+int parse_int_arg(const char* flag_name, const std::string& value, int min_value,
                   int max_value) {
   size_t pos = 0;
   long long parsed = 0;
   try {
     parsed = std::stoll(value, &pos, 10);
   } catch (const std::exception&) {
-    throw std::invalid_argument(flag_name + " requires a valid integer");
+    throw std::invalid_argument(std::string(flag_name) + " requires a valid integer");
   }
 
   if (pos != value.size()) {
-    throw std::invalid_argument(flag_name + " requires a valid integer");
+    throw std::invalid_argument(std::string(flag_name) + " requires a valid integer");
   }
   if (parsed < min_value || parsed > max_value) {
-    throw std::invalid_argument(flag_name + " is out of range");
+    throw std::invalid_argument(std::string(flag_name) + " is out of range");
   }
   return static_cast<int>(parsed);
 }
@@ -170,16 +170,16 @@ Config parse_config(int argc, char** argv) {
       if (i + 1 >= argc) {
         throw std::invalid_argument("--alert-dedupe-window requires a value");
       }
-      cfg.alert.dedupe_window_sec =
-          parse_int_arg(argv[++i], "--alert-dedupe-window", 0, std::numeric_limits<int>::max());
+      cfg.alert.dedupe_window_sec = parse_int_arg("--alert-dedupe-window", argv[++i], 0,
+                                                  std::numeric_limits<int>::max());
       continue;
     }
     if (arg == "--alert-rate-limit") {
       if (i + 1 >= argc) {
         throw std::invalid_argument("--alert-rate-limit requires a value");
       }
-      cfg.alert.rate_limit_per_minute =
-          parse_int_arg(argv[++i], "--alert-rate-limit", 1, std::numeric_limits<int>::max());
+      cfg.alert.rate_limit_per_minute = parse_int_arg("--alert-rate-limit", argv[++i], 1,
+                                                      std::numeric_limits<int>::max());
       continue;
     }
     if (arg == "--help" || arg == "-h") {

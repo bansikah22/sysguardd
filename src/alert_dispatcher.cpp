@@ -13,6 +13,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
 namespace sysguardd {
 
 // ---- Severity helpers -------------------------------------------------------
@@ -56,39 +59,70 @@ bool has_header_control_chars(const std::string& value) {
   return false;
 }
 
-// ---- HTTP POST sender -------------------------------------------------------
+int parse_http_status_code(const std::string& response) {
+  const auto line_end = response.find("\r\n");
+  const std::string first_line = line_end == std::string::npos ? response : response.substr(0, line_end);
+  const auto first_space = first_line.find(' ');
+  if (first_space == std::string::npos) {
+    return 0;
+  }
+  const auto second_space = first_line.find(' ', first_space + 1);
+  const std::string code_str =
+      second_space == std::string::npos
+          ? first_line.substr(first_space + 1)
+          : first_line.substr(first_space + 1, second_space - (first_space + 1));
+  if (code_str.size() != 3) {
+    return 0;
+  }
+  for (char c : code_str) {
+    if (c < '0' || c > '9') {
+      return 0;
+    }
+  }
+  return std::stoi(code_str);
+}
 
-// Sends a plain HTTP/1.1 POST request over a TCP socket.
-// Only http:// is supported (HTTPS requires a TLS library).
-bool send_http_post(const std::string& url, const std::string& body) {
-  if (url.size() < 7 || url.substr(0, 7) != "http://") {
-    std::cerr << "alert: only http:// webhook URLs are supported\n";
+// ---- HTTP/HTTPS POST sender -------------------------------------------------
+
+struct ParsedWebhookUrl {
+  std::string scheme;
+  std::string host;
+  std::string port;
+  std::string path;
+};
+
+bool parse_webhook_url(const std::string& url, ParsedWebhookUrl& parsed) {
+  if (url.rfind("http://", 0) == 0) {
+    parsed.scheme = "http";
+  } else if (url.rfind("https://", 0) == 0) {
+    parsed.scheme = "https";
+  } else {
+    std::cerr << "alert: only http:// and https:// webhook URLs are supported\n";
     return false;
   }
 
-  const std::string rest = url.substr(7);
-  std::string host;
-  std::string port_str = "80";
-  std::string path = "/";
+  const std::string rest = url.substr(parsed.scheme.size() + 3);
+  parsed.port = parsed.scheme == "https" ? "443" : "80";
+  parsed.path = "/";
 
   const auto slash_pos = rest.find('/');
   const std::string hostport = (slash_pos == std::string::npos) ? rest : rest.substr(0, slash_pos);
   if (slash_pos != std::string::npos) {
-    path = rest.substr(slash_pos);
+    parsed.path = rest.substr(slash_pos);
   }
 
   const auto colon_pos = hostport.find(':');
   if (colon_pos == std::string::npos) {
-    host = hostport;
+    parsed.host = hostport;
   } else {
-    host = hostport.substr(0, colon_pos);
-    port_str = hostport.substr(colon_pos + 1);
-    if (port_str.empty()) {
+    parsed.host = hostport.substr(0, colon_pos);
+    parsed.port = hostport.substr(colon_pos + 1);
+    if (parsed.port.empty()) {
       std::cerr << "alert: invalid empty port in webhook URL\n";
       return false;
     }
     // Validate port is purely numeric (CWE-20)
-    for (char c : port_str) {
+    for (char c : parsed.port) {
       if (c < '0' || c > '9') {
         std::cerr << "alert: invalid port in webhook URL\n";
         return false;
@@ -98,35 +132,39 @@ bool send_http_post(const std::string& url, const std::string& body) {
     size_t pos = 0;
     unsigned long parsed_port = 0;
     try {
-      parsed_port = std::stoul(port_str, &pos, 10);
+      parsed_port = std::stoul(parsed.port, &pos, 10);
     } catch (const std::exception&) {
       std::cerr << "alert: invalid port in webhook URL\n";
       return false;
     }
-    if (pos != port_str.size() || parsed_port < 1 || parsed_port > 65535) {
+    if (pos != parsed.port.size() || parsed_port < 1 || parsed_port > 65535) {
       std::cerr << "alert: port out of range in webhook URL\n";
       return false;
     }
   }
 
-  if (host.empty()) {
+  if (parsed.host.empty()) {
     std::cerr << "alert: empty host in webhook URL\n";
     return false;
   }
-  if (has_header_control_chars(host) || has_header_control_chars(port_str) ||
-      has_header_control_chars(path)) {
+  if (has_header_control_chars(parsed.host) || has_header_control_chars(parsed.port) ||
+      has_header_control_chars(parsed.path)) {
     std::cerr << "alert: invalid control characters in webhook URL\n";
     return false;
   }
 
+  return true;
+}
+
+bool send_http_post_socket(const ParsedWebhookUrl& parsed, const std::string& body) {
   struct addrinfo hints{};
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICSERV;
 
   struct addrinfo* res = nullptr;
-  if (getaddrinfo(host.c_str(), port_str.c_str(), &hints, &res) != 0 || res == nullptr) {
-    std::cerr << "alert: failed to resolve webhook host: " << host << "\n";
+  if (getaddrinfo(parsed.host.c_str(), parsed.port.c_str(), &hints, &res) != 0 || res == nullptr) {
+    std::cerr << "alert: failed to resolve webhook host: " << parsed.host << "\n";
     return false;
   }
 
@@ -145,14 +183,14 @@ bool send_http_post(const std::string& url, const std::string& body) {
   if (connect(fd, res->ai_addr, res->ai_addrlen) != 0) {
     freeaddrinfo(res);
     close(fd);
-    std::cerr << "alert: failed to connect to webhook host: " << host << "\n";
+    std::cerr << "alert: failed to connect to webhook host: " << parsed.host << "\n";
     return false;
   }
   freeaddrinfo(res);
 
   std::ostringstream req;
-  req << "POST " << path << " HTTP/1.1\r\n"
-      << "Host: " << host << ":" << port_str << "\r\n"
+  req << "POST " << parsed.path << " HTTP/1.1\r\n"
+      << "Host: " << parsed.host << ":" << parsed.port << "\r\n"
       << "Content-Type: application/json\r\n"
       << "Content-Length: " << body.size() << "\r\n"
       << "Connection: close\r\n"
@@ -169,11 +207,153 @@ bool send_http_post(const std::string& url, const std::string& body) {
     sent += n;
   }
 
-  // Drain response to allow clean TCP close; ignore content
+  std::string response;
   char buf[512];
-  while (recv(fd, buf, sizeof(buf), 0) > 0) {}
+  ssize_t n = 0;
+  while ((n = recv(fd, buf, sizeof(buf), 0)) > 0) {
+    if (response.size() < 2048) {
+      response.append(buf, static_cast<size_t>(n));
+    }
+  }
   close(fd);
-  return sent == total;
+  if (sent != total) {
+    return false;
+  }
+
+  const int status = parse_http_status_code(response);
+  if (status == 0) {
+    std::cerr << "alert: invalid HTTP response from webhook\n";
+    return false;
+  }
+  if (status < 200 || status > 299) {
+    std::cerr << "alert: webhook returned HTTP " << status << "\n";
+    return false;
+  }
+  return true;
+}
+
+bool send_https_post_socket(const ParsedWebhookUrl& parsed, const std::string& body) {
+  struct addrinfo hints{};
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_NUMERICSERV;
+
+  struct addrinfo* res = nullptr;
+  if (getaddrinfo(parsed.host.c_str(), parsed.port.c_str(), &hints, &res) != 0 || res == nullptr) {
+    std::cerr << "alert: failed to resolve webhook host: " << parsed.host << "\n";
+    return false;
+  }
+
+  const int fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+  if (fd < 0) {
+    freeaddrinfo(res);
+    std::cerr << "alert: socket creation failed\n";
+    return false;
+  }
+
+  struct timeval tv{5, 0};
+  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+  if (connect(fd, res->ai_addr, res->ai_addrlen) != 0) {
+    freeaddrinfo(res);
+    close(fd);
+    std::cerr << "alert: failed to connect to webhook host: " << parsed.host << "\n";
+    return false;
+  }
+  freeaddrinfo(res);
+
+  SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+  if (ctx == nullptr) {
+    close(fd);
+    std::cerr << "alert: failed to initialize TLS context\n";
+    return false;
+  }
+
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, nullptr);
+  if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
+    SSL_CTX_free(ctx);
+    close(fd);
+    std::cerr << "alert: failed to load system TLS trust store\n";
+    return false;
+  }
+
+  SSL* ssl = SSL_new(ctx);
+  if (ssl == nullptr) {
+    SSL_CTX_free(ctx);
+    close(fd);
+    std::cerr << "alert: failed to create TLS session\n";
+    return false;
+  }
+
+  SSL_set_fd(ssl, fd);
+  SSL_set_tlsext_host_name(ssl, parsed.host.c_str());
+  SSL_set1_host(ssl, parsed.host.c_str());
+
+  if (SSL_connect(ssl) != 1) {
+    SSL_free(ssl);
+    SSL_CTX_free(ctx);
+    close(fd);
+    std::cerr << "alert: TLS handshake failed for webhook host: " << parsed.host << "\n";
+    return false;
+  }
+
+  std::ostringstream req;
+  req << "POST " << parsed.path << " HTTP/1.1\r\n"
+      << "Host: " << parsed.host << ":" << parsed.port << "\r\n"
+      << "Content-Type: application/json\r\n"
+      << "Content-Length: " << body.size() << "\r\n"
+      << "Connection: close\r\n"
+      << "\r\n"
+      << body;
+
+  const auto req_str = req.str();
+  const char* data = req_str.c_str();
+  size_t sent = 0;
+  while (sent < req_str.size()) {
+    const int n = SSL_write(ssl, data + sent, static_cast<int>(req_str.size() - sent));
+    if (n <= 0) break;
+    sent += static_cast<size_t>(n);
+  }
+
+  std::string response;
+  char buf[512];
+  int n = 0;
+  while ((n = SSL_read(ssl, buf, sizeof(buf))) > 0) {
+    if (response.size() < 2048) {
+      response.append(buf, static_cast<size_t>(n));
+    }
+  }
+
+  bool ok = sent == req_str.size();
+  if (ok) {
+    const int status = parse_http_status_code(response);
+    if (status == 0) {
+      std::cerr << "alert: invalid HTTP response from webhook\n";
+      ok = false;
+    } else if (status < 200 || status > 299) {
+      std::cerr << "alert: webhook returned HTTP " << status << "\n";
+      ok = false;
+    }
+  }
+  SSL_shutdown(ssl);
+  SSL_free(ssl);
+  SSL_CTX_free(ctx);
+  close(fd);
+  return ok;
+}
+
+bool send_webhook_request(const std::string& url, const std::string& body) {
+  ParsedWebhookUrl parsed;
+  if (!parse_webhook_url(url, parsed)) {
+    return false;
+  }
+
+  if (parsed.scheme == "https") {
+    return send_https_post_socket(parsed, body);
+  }
+
+  return send_http_post_socket(parsed, body);
 }
 
 // ---- Webhook payload --------------------------------------------------------
@@ -298,7 +478,7 @@ void AlertDispatcher::send_webhook(const AlertEvent& evt) {
     return;
   }
   const auto payload = build_webhook_payload(evt);
-  if (!send_http_post(cfg_.webhook_url, payload)) {
+  if (!send_webhook_request(cfg_.webhook_url, payload)) {
     std::cerr << "alert: webhook delivery failed for event " << evt.event_id << "\n";
   }
 }

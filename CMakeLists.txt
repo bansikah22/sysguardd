@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(sysguardd LANGUAGES C CXX)
 
+find_package(OpenSSL REQUIRED)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -28,7 +30,7 @@ add_library(sysguardd_core
 target_include_directories(sysguardd_core PUBLIC include)
 target_compile_options(sysguardd_core PRIVATE -Wall -Wextra -Wpedantic -Werror)
 
-target_link_libraries(sysguardd_core PRIVATE pthread)
+target_link_libraries(sysguardd_core PRIVATE pthread OpenSSL::SSL OpenSSL::Crypto)
 
 add_executable(sysguardd src/main.cpp)
 target_link_libraries(sysguardd PRIVATE sysguardd_core)

@@ -51,7 +51,7 @@ For local runs, put `SYSGUARDD_ALERT_WEBHOOK_URL=...` in a repo-root `.env` file
 ```bash
 sysguardd daemon --mode enforce \
   --alert-enabled \
-  --alert-webhook-url http://hooks.slack.com/services/XXX/YYY/ZZZ \
+  --alert-webhook-url https://hooks.slack.com/services/XXX/YYY/ZZZ \
   --alert-min-severity critical
 ```
 
