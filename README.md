@@ -1,7 +1,7 @@
 # SysGuardd
 
 <div align="center">
-  <img src="docs/images/sysguardd.png" alt="SysGuardd Logo" width="200" />
+  <img src="docs/images/sysguardd.png" alt="SysGuardd Logo" width="300" />
 </div>
 
 SysGuardd is a runtime process enforcement daemon focused on stopping unauthorized execution on Linux hosts and Kubernetes nodes.
